@@ -4,17 +4,18 @@ open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Mibo.Elmish
-open Mibo.Elmish.Graphics2D
+open Mibo.Rendering
+open Mibo.Rendering.Graphics3D
 
 type Model =
-    { Position: Vector2; Velocity: Vector2 }
+    { Position: Vector3; Velocity: Vector3 }
 
 type Msg = Tick of GameTime
 
 let init (ctx: GameContext) : struct (Model * Cmd<Msg>) =
     let model =
-        { Position = Vector2(100.f, 100.f)
-          Velocity = Vector2(150.f, 100.f) }
+        { Position = Vector3(100.f, 0f, 0.f)
+          Velocity = Vector3(150.f, 0.f, 0f) }
 
     model, Cmd.none
 
@@ -29,32 +30,23 @@ let update (msg: Msg) (model: Model) : struct (Model * Cmd<Msg>) =
         if position.X < 0.f || position.X > 750.f then
             velocity.X <- -velocity.X
 
-        if position.Y < 0.f || position.Y > 550.f then
-            velocity.Y <- -velocity.Y
-
         { model with
             Position = position
             Velocity = velocity },
         Cmd.none
 
-let view (ctx: GameContext) (model: Model) (buffer: RenderBuffer<RenderCmd2D>) =
-    // Draw something simple
-    let pixel =
-        Assets.getOrCreate
-            "pixel"
-            (fun gd ->
-                let t = new Texture2D(gd, 1, 1)
-                t.SetData([| Color.White |])
-                t)
-            ctx
+let view (ctx: GameContext) (model: Model) (buffer: PipelineBuffer<RenderCommand>) =
+    let camera = Camera.perspectiveDefaults
 
-    Draw2D.sprite pixel (Rectangle(int model.Position.X, int model.Position.Y, 50, 50))
-    |> Draw2D.withColor Color.Lime
-    |> Draw2D.submit buffer
+    Buffer.camera camera buffer
+    |> Buffer.draw (draw { at (Vector3(1f, 1f, 1f)) })
+    |> Buffer.submit
 
 let program =
     Program.mkProgram init update
     |> Program.withAssets
-    |> Program.withRenderer (fun g -> Batch2DRenderer.create g view)
+    |> Program.withRenderer (fun g ->
+        RenderPipeline.create PipelineConfig.defaults g
+        |> PipelineRenderer.create g view)
     |> Program.withTick Tick
     |> Program.withConfig (fun (game, graphics) -> game.Content.RootDirectory <- "Content")
