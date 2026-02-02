@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="FsJump.WindowsDX">
+    <resource name="FSharpSignatureData.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedData.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpSignatureDataB.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedDataB.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpOptimizationData.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedData.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpOptimizationDataB.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedDataB.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpOptimizationInfo.FsJump.WindowsDX" action="remove"></resource>
+    <resource name="FSharpSignatureInfo.FsJump.WindowsDX" action="remove"></resource>
+  </assembly>
+</linker>

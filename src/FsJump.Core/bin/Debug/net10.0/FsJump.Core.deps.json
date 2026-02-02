@@ -1,0 +1,155 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "FsJump.Core/1.0.0": {
+        "dependencies": {
+          "FSharp.Core": "10.0.102",
+          "Mibo": "1.5.1",
+          "MonoGame.Framework.Native": "3.8.4.1"
+        },
+        "runtime": {
+          "FsJump.Core.dll": {}
+        }
+      },
+      "FSharp.Core/10.0.102": {
+        "runtime": {
+          "lib/netstandard2.1/FSharp.Core.dll": {
+            "assemblyVersion": "10.0.0.0",
+            "fileVersion": "10.1.225.61305"
+          }
+        },
+        "resources": {
+          "lib/netstandard2.1/cs/FSharp.Core.resources.dll": {
+            "locale": "cs"
+          },
+          "lib/netstandard2.1/de/FSharp.Core.resources.dll": {
+            "locale": "de"
+          },
+          "lib/netstandard2.1/es/FSharp.Core.resources.dll": {
+            "locale": "es"
+          },
+          "lib/netstandard2.1/fr/FSharp.Core.resources.dll": {
+            "locale": "fr"
+          },
+          "lib/netstandard2.1/it/FSharp.Core.resources.dll": {
+            "locale": "it"
+          },
+          "lib/netstandard2.1/ja/FSharp.Core.resources.dll": {
+            "locale": "ja"
+          },
+          "lib/netstandard2.1/ko/FSharp.Core.resources.dll": {
+            "locale": "ko"
+          },
+          "lib/netstandard2.1/pl/FSharp.Core.resources.dll": {
+            "locale": "pl"
+          },
+          "lib/netstandard2.1/pt-BR/FSharp.Core.resources.dll": {
+            "locale": "pt-BR"
+          },
+          "lib/netstandard2.1/ru/FSharp.Core.resources.dll": {
+            "locale": "ru"
+          },
+          "lib/netstandard2.1/tr/FSharp.Core.resources.dll": {
+            "locale": "tr"
+          },
+          "lib/netstandard2.1/zh-Hans/FSharp.Core.resources.dll": {
+            "locale": "zh-Hans"
+          },
+          "lib/netstandard2.1/zh-Hant/FSharp.Core.resources.dll": {
+            "locale": "zh-Hant"
+          }
+        }
+      },
+      "FSharp.UMX/1.1.0": {
+        "dependencies": {
+          "FSharp.Core": "10.0.102"
+        },
+        "runtime": {
+          "lib/netstandard2.0/FSharp.UMX.dll": {
+            "assemblyVersion": "1.1.0.0",
+            "fileVersion": "1.1.0.0"
+          }
+        }
+      },
+      "JDeck/1.0.0": {
+        "dependencies": {
+          "FSharp.Core": "10.0.102"
+        },
+        "runtime": {
+          "lib/net10.0/JDeck.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      },
+      "Mibo/1.5.1": {
+        "dependencies": {
+          "FSharp.Core": "10.0.102",
+          "FSharp.UMX": "1.1.0",
+          "JDeck": "1.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Mibo.dll": {
+            "assemblyVersion": "1.5.1.0",
+            "fileVersion": "1.5.1.0"
+          }
+        }
+      },
+      "MonoGame.Framework.Native/3.8.4.1": {
+        "runtime": {
+          "lib/net8.0/MonoGame.Framework.dll": {
+            "assemblyVersion": "3.8.4.1",
+            "fileVersion": "3.8.4.1"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "FsJump.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "FSharp.Core/10.0.102": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-q6IZdXcAJE2V3qxAWBpL4OrKfFBMsjbOsvT4yyNwRFbt0Q1b6bJ7I/5xlVHh05mGrW9bmH6rPivXsIlAvuvCiA==",
+      "path": "fsharp.core/10.0.102",
+      "hashPath": "fsharp.core.10.0.102.nupkg.sha512"
+    },
+    "FSharp.UMX/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0+4w4/yBL5z7w1/k198ooPbfMqkzMSXPRVZEVingnwAdjM//QIFG25eJbB3RtoSQAusBwV5B3VcSudxJejd5Bg==",
+      "path": "fsharp.umx/1.1.0",
+      "hashPath": "fsharp.umx.1.1.0.nupkg.sha512"
+    },
+    "JDeck/1.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-a4d+USHnlc3+zPZb7MOKXD58BbVMaO1sajROxPQH5m+g08QtqVcr4PlNs6cT5QuP13lKpHlw9X+9UlAcXmguYA==",
+      "path": "jdeck/1.0.0",
+      "hashPath": "jdeck.1.0.0.nupkg.sha512"
+    },
+    "Mibo/1.5.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-o3O+6rV13c0Pvwm/2Ddt/ErFygcAYXXRhAOiLyZAzpJx3/lgp57MgSeoGiRVXTJe7EHHGOENoSxyuf9OnxHlwQ==",
+      "path": "mibo/1.5.1",
+      "hashPath": "mibo.1.5.1.nupkg.sha512"
+    },
+    "MonoGame.Framework.Native/3.8.4.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-QxB+eK5aUirsUN/wMhYZZnj2/vgHxsDQtVlRMVVWozgwmzJXsnPxzbRTrvN8+mQy1MfDHps4b/PYhKmCnjoLsQ==",
+      "path": "monogame.framework.native/3.8.4.1",
+      "hashPath": "monogame.framework.native.3.8.4.1.nupkg.sha512"
+    }
+  }
+}

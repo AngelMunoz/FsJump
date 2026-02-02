@@ -1,0 +1,11 @@
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.fsproj.AssemblyReference.cache
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.AssemblyInfoInputs.cache
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.AssemblyInfo.fs
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.fsproj.CoreCompileInputs.cache
+/Users/amunoz/repos/FsJump/src/FsJump.Core/bin/Debug/net10.0/FsJump.Core.deps.json
+/Users/amunoz/repos/FsJump/src/FsJump.Core/bin/Debug/net10.0/FsJump.Core.dll
+/Users/amunoz/repos/FsJump/src/FsJump.Core/bin/Debug/net10.0/FsJump.Core.pdb
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.dll
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/refint/FsJump.Core.dll
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/FsJump.Core.pdb
+/Users/amunoz/repos/FsJump/src/FsJump.Core/obj/Debug/net10.0/ref/FsJump.Core.dll

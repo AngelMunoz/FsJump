@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<linker>
+  <assembly fullname="FsJump.Core">
+    <resource name="FSharpSignatureData.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedData.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpSignatureDataB.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpSignatureCompressedDataB.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpOptimizationData.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedData.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpOptimizationDataB.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpOptimizationCompressedDataB.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpOptimizationInfo.FsJump.Core" action="remove"></resource>
+    <resource name="FSharpSignatureInfo.FsJump.Core" action="remove"></resource>
+  </assembly>
+</linker>

@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "dgSpecHash": "K2HZ4+iOGAQ=",
+  "success": true,
+  "projectFilePath": "/Users/amunoz/repos/FsJump/src/FsJump.Core/FsJump.Core.fsproj",
+  "expectedPackageFiles": [
+    "/Users/amunoz/.nuget/packages/fsharp.core/10.0.102/fsharp.core.10.0.102.nupkg.sha512",
+    "/Users/amunoz/.nuget/packages/fsharp.umx/1.1.0/fsharp.umx.1.1.0.nupkg.sha512",
+    "/Users/amunoz/.nuget/packages/jdeck/1.0.0/jdeck.1.0.0.nupkg.sha512",
+    "/Users/amunoz/.nuget/packages/mibo/1.5.1/mibo.1.5.1.nupkg.sha512",
+    "/Users/amunoz/.nuget/packages/monogame.framework.native/3.8.4.1/monogame.framework.native.3.8.4.1.nupkg.sha512"
+  ],
+  "logs": []
+}

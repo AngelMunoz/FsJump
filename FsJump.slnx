@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FsJump.Core/FsJump.Core.fsproj" />
+    <Project Path="src/FsJump.Desktop/FsJump.Desktop.fsproj" />
+    <Project Path="src/FsJump.WindowsDX/FsJump.WindowsDX.fsproj" />
+    <!-- <Project Path="src/FsJump.Android/FsJump.Android.fsproj" /> -->
+    <!-- <Project Path="src/FsJump.iOS/FsJump.iOS.fsproj" /> -->
+  </Folder>
+</Solution>
