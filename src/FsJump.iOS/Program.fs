@@ -19,7 +19,7 @@ type AppDelegate() =
           ||| DisplayOrientation.LandscapeRight
           ||| DisplayOrientation.Portrait)
 
-    let game = new ElmishGame<Model, Msg>(program)
+    let game = new ElmishGame<_, _>(program)
     game.Run()
     true
 

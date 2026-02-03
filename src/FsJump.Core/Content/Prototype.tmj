@@ -3,9 +3,21 @@
  "infinite":false,
  "layers":[
         {
-         "compression":"zlib",
-         "data":"eJxjYBgF1AJ8QCxGANPS7oEC9LJbGA0zING0AqpUMIOctIAsr4pG0xIQk0ZVkTA2\/eSkd0ryxlBO+4JoGJsYMXKEMD77RsHAAQDArwUu",
-         "encoding":"base64",
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 22, 22, 22, 22, 22, 22, 22, 22, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 19, 19, 19, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 22, 22, 22, 22, 22, 0,
+            0, 0, 0, 0, 0, 0, 22, 0, 0, 37, 0, 37, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 37, 37, 37, 0, 0, 0, 0, 22, 22, 22, 22, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            17, 17, 17, 17, 0, 17, 17, 17, 17, 17, 17, 0, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 0, 0, 17, 17, 17, 17,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":15,
          "id":4,
          "name":"Base",
@@ -15,7 +27,7 @@
          "width":32,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "draworder":"topdown",
          "id":6,
@@ -32,7 +44,7 @@
                  "width":64,
                  "x":128,
                  "y":704
-                },
+                }, 
                 {
                  "gid":109,
                  "height":64,
@@ -44,7 +56,7 @@
                  "width":64,
                  "x":576,
                  "y":704
-                },
+                }, 
                 {
                  "gid":109,
                  "height":64,
@@ -56,7 +68,7 @@
                  "width":64,
                  "x":1600,
                  "y":704
-                },
+                }, 
                 {
                  "gid":2147483717,
                  "height":64,
@@ -68,7 +80,7 @@
                  "width":128,
                  "x":1792,
                  "y":192
-                },
+                }, 
                 {
                  "gid":3,
                  "height":64,
@@ -80,7 +92,7 @@
                  "width":64,
                  "x":832,
                  "y":320
-                },
+                }, 
                 {
                  "gid":3,
                  "height":64,
@@ -92,7 +104,7 @@
                  "width":64,
                  "x":896,
                  "y":320
-                },
+                }, 
                 {
                  "gid":101,
                  "height":64,
@@ -110,7 +122,7 @@
                  "width":64,
                  "x":1536,
                  "y":512
-                },
+                }, 
                 {
                  "gid":78,
                  "height":64,
@@ -128,11 +140,23 @@
          "visible":true,
          "x":0,
          "y":0
-        },
+        }, 
         {
-         "compression":"zlib",
-         "data":"eJxjYBh+IAaKQYBxIB0yAsBQC1+Qe2MIqho4kEclcwazHwcTAKWHQCiGAVgcIIuj08VYzIlBU5OHxgeBAAbqxfEoGPoAAMAMBtU=",
-         "encoding":"base64",
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 92, 0, 1, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 92, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 110, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 92, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            1, 81, 81, 0, 0, 110, 0, 81, 81, 0, 81, 0, 81, 0, 115, 0, 0, 0, 1, 92, 0, 81, 0, 110, 0, 81, 0, 0, 80, 110, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":15,
          "id":5,
          "name":"Decorations",
@@ -142,7 +166,7 @@
          "width":32,
          "x":0,
          "y":0
-        },
+        }, 
         {
          "draworder":"topdown",
          "id":7,
@@ -193,688 +217,688 @@
                  "image":"PlatformerTiles\/arrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":1,
                  "image":"PlatformerTiles\/arrows.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":2,
                  "image":"PlatformerTiles\/barrel.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":3,
                  "image":"PlatformerTiles\/block-grass-corner-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":4,
                  "image":"PlatformerTiles\/block-grass-corner-overhang-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":5,
                  "image":"PlatformerTiles\/block-grass-corner-overhang.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":6,
                  "image":"PlatformerTiles\/block-grass-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":7,
                  "image":"PlatformerTiles\/block-grass-curve-half.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":8,
                  "image":"PlatformerTiles\/block-grass-curve-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":9,
                  "image":"PlatformerTiles\/block-grass-curve.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":10,
                  "image":"PlatformerTiles\/block-grass-edge.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":11,
                  "image":"PlatformerTiles\/block-grass-hexagon.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":12,
                  "image":"PlatformerTiles\/block-grass-large-slope-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":13,
                  "image":"PlatformerTiles\/block-grass-large-slope-steep-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":14,
                  "image":"PlatformerTiles\/block-grass-large-slope-steep.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":15,
                  "image":"PlatformerTiles\/block-grass-large-slope.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":16,
                  "image":"PlatformerTiles\/block-grass-large-tall.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":17,
                  "image":"PlatformerTiles\/block-grass-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":18,
                  "image":"PlatformerTiles\/block-grass-long.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":19,
                  "image":"PlatformerTiles\/block-grass-low-hexagon.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":20,
                  "image":"PlatformerTiles\/block-grass-low-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":21,
                  "image":"PlatformerTiles\/block-grass-low-long.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":22,
                  "image":"PlatformerTiles\/block-grass-low-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":23,
                  "image":"PlatformerTiles\/block-grass-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":24,
                  "image":"PlatformerTiles\/block-grass-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":25,
                  "image":"PlatformerTiles\/block-grass-overhang-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":26,
                  "image":"PlatformerTiles\/block-grass-overhang-edge.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":27,
                  "image":"PlatformerTiles\/block-grass-overhang-hexagon.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":28,
                  "image":"PlatformerTiles\/block-grass-overhang-large-slope-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":29,
                  "image":"PlatformerTiles\/block-grass-overhang-large-slope-steep-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":30,
                  "image":"PlatformerTiles\/block-grass-overhang-large-slope-steep.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":31,
                  "image":"PlatformerTiles\/block-grass-overhang-large-slope.png",
                  "imageheight":64,
                  "imagewidth":64
                 },
-
+            
                 {
                  "id":32,
                  "image":"PlatformerTiles\/block-grass-overhang-large-tall.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":33,
                  "image":"PlatformerTiles\/block-grass-overhang-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":34,
                  "image":"PlatformerTiles\/block-grass-overhang-long.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":35,
                  "image":"PlatformerTiles\/block-grass-overhang-low-hexagon.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":36,
                  "image":"PlatformerTiles\/block-grass-overhang-low-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":37,
                  "image":"PlatformerTiles\/block-grass-overhang-low-long.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":38,
                  "image":"PlatformerTiles\/block-grass-overhang-low-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":39,
                  "image":"PlatformerTiles\/block-grass-overhang-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":40,
                  "image":"PlatformerTiles\/block-grass-overhang-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":41,
                  "image":"PlatformerTiles\/block-grass.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":42,
                  "image":"PlatformerTiles\/block-moving-blue.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":43,
                  "image":"PlatformerTiles\/block-moving-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":44,
                  "image":"PlatformerTiles\/block-moving.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":45,
                  "image":"PlatformerTiles\/block-snow-corner-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":46,
                  "image":"PlatformerTiles\/block-snow-corner-overhang-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":47,
                  "image":"PlatformerTiles\/block-snow-corner-overhang.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":48,
                  "image":"PlatformerTiles\/block-snow-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":49,
                  "image":"PlatformerTiles\/block-snow-curve-half.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":50,
                  "image":"PlatformerTiles\/block-snow-curve-low.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":51,
                  "image":"PlatformerTiles\/block-snow-curve.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":52,
                  "image":"PlatformerTiles\/block-snow-edge.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":53,
                  "image":"PlatformerTiles\/block-snow-hexagon.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":54,
                  "image":"PlatformerTiles\/block-snow-large-slope-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":55,
                  "image":"PlatformerTiles\/block-snow-large-slope-steep-narrow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":56,
                  "image":"PlatformerTiles\/brick.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":57,
                  "image":"PlatformerTiles\/button-round.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":58,
                  "image":"PlatformerTiles\/button-square.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":59,
                  "image":"PlatformerTiles\/character-oobi.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":60,
                  "image":"PlatformerTiles\/character-oodi.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":61,
                  "image":"PlatformerTiles\/character-ooli.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":62,
                  "image":"PlatformerTiles\/character-oopi.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":63,
                  "image":"PlatformerTiles\/character-oozi.png",
                  "imageheight":64,
                  "imagewidth":64
                 },
-
+            
                 {
                  "id":64,
                  "image":"PlatformerTiles\/chest.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":65,
                  "image":"PlatformerTiles\/coin-bronze.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":66,
                  "image":"PlatformerTiles\/coin-gold.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":67,
                  "image":"PlatformerTiles\/coin-silver.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":68,
                  "image":"PlatformerTiles\/conveyor-belt.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":69,
                  "image":"PlatformerTiles\/fence-corner-curved.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":70,
                  "image":"PlatformerTiles\/fence-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":71,
                  "image":"PlatformerTiles\/fence-low-broken.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":72,
                  "image":"PlatformerTiles\/fence-low-corner-curved.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":73,
                  "image":"PlatformerTiles\/fence-low-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":74,
                  "image":"PlatformerTiles\/fence-low-straight.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":75,
                  "image":"PlatformerTiles\/fence-rope.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":76,
                  "image":"PlatformerTiles\/fence-straight.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":77,
                  "image":"PlatformerTiles\/flag.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":78,
                  "image":"PlatformerTiles\/flowers-tall.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":79,
                  "image":"PlatformerTiles\/flowers.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":80,
                  "image":"PlatformerTiles\/grass.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":81,
                  "image":"PlatformerTiles\/heart.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":82,
                  "image":"PlatformerTiles\/hedge-corner.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":83,
                  "image":"PlatformerTiles\/hedge.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":84,
                  "image":"PlatformerTiles\/jewel.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":85,
                  "image":"PlatformerTiles\/key.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":86,
                  "image":"PlatformerTiles\/ladder-broken.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":87,
                  "image":"PlatformerTiles\/ladder-long.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":88,
                  "image":"PlatformerTiles\/ladder.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":89,
                  "image":"PlatformerTiles\/lever.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":90,
                  "image":"PlatformerTiles\/lock.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":91,
                  "image":"PlatformerTiles\/mushrooms.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":92,
                  "image":"PlatformerTiles\/pipe.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":93,
                  "image":"PlatformerTiles\/plant.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":94,
                  "image":"PlatformerTiles\/platform-fortified.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":95,
                  "image":"PlatformerTiles\/platform-overhang.png",
                  "imageheight":64,
                  "imagewidth":64
                 },
-
+            
                 {
                  "id":96,
                  "image":"PlatformerTiles\/platform-ramp.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":97,
                  "image":"PlatformerTiles\/platform.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":98,
                  "image":"PlatformerTiles\/poles.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":99,
                  "image":"PlatformerTiles\/rocks.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":100,
                  "image":"PlatformerTiles\/saw.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":101,
                  "image":"PlatformerTiles\/sign.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":102,
                  "image":"PlatformerTiles\/spike-block-wide.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":103,
                  "image":"PlatformerTiles\/spike-block.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":104,
                  "image":"PlatformerTiles\/spring.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":105,
                  "image":"PlatformerTiles\/star.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":106,
                  "image":"PlatformerTiles\/stones.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":107,
                  "image":"PlatformerTiles\/trap-spikes-large.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":108,
                  "image":"PlatformerTiles\/trap-spikes.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":109,
                  "image":"PlatformerTiles\/tree-pine-small.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":110,
                  "image":"PlatformerTiles\/tree-pine-snow-small.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":111,
                  "image":"PlatformerTiles\/tree-pine-snow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":112,
                  "image":"PlatformerTiles\/tree-pine.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":113,
                  "image":"PlatformerTiles\/tree-snow.png",
                  "imageheight":64,
                  "imagewidth":64
-                },
+                }, 
                 {
                  "id":114,
                  "image":"PlatformerTiles\/tree.png",

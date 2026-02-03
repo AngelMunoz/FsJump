@@ -15,6 +15,6 @@ let main _ =
       graphics.PreferredBackBufferWidth <- 800
       graphics.PreferredBackBufferHeight <- 600)
 
-  use game = new ElmishGame<Model, Msg>(program)
+  use game = new ElmishGame<_, _>(program)
   game.Run()
   0

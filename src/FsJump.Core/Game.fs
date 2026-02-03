@@ -1,52 +1,160 @@
 module FsJump.Core.Game
 
 open System
+open System.IO
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Mibo.Elmish
 open Mibo.Rendering
 open Mibo.Rendering.Graphics3D
+open FsJump.Core.Types
+open FsJump.Core.Level
+open FsJump.Core.Assets
 
-type Model =
-    { Position: Vector3; Velocity: Vector3 }
+let cellSizeF = 64.0f
+let levelWidth = 32.0f * cellSizeF // 2048 units
+let levelHeight = 15.0f * cellSizeF // 960 units
+let cameraZOffset = 500f
+let cameraFOV = MathHelper.PiOver4
 
-type Msg = Tick of GameTime
+let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
+  let position = Vector3(target.X, target.Y, cameraZOffset)
 
-let init (ctx: GameContext) : struct (Model * Cmd<Msg>) =
-    let model =
-        { Position = Vector3(100.f, 0f, 0.f)
-          Velocity = Vector3(150.f, 0.f, 0f) }
+  Camera.perspectiveDefaults
+  |> Camera.lookAt position target
+  |> Camera.withUp Vector3.Up
+  |> Camera.withFov cameraFOV
+  |> Camera.withAspect(float32(vp.Width / vp.Height))
+  |> Camera.withRange 1.0f 2000f
+
+
+let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
+  let vp = ctx.GraphicsDevice.Viewport
+
+  let contentPath =
+    Path.Combine(
+      AppContext.BaseDirectory,
+      ctx.Game.Content.RootDirectory,
+      "Prototype.tmj"
+    )
+
+  match loadTiledMap contentPath with
+  | Ok tiledMap ->
+    let entities = loadAllLevelEntities tiledMap
+    printfn $"Loaded {entities.Length} entities"
+
+    printfn
+      $"Layers: {tiledMap.Layers.Length}, ObjectGroups: {tiledMap.ObjectGroups.Length}"
+
+    for layer in tiledMap.Layers do
+      printfn
+        $"  Layer: {layer.Name} ({layer.Width}x{layer.Height}, {layer.Data.Length} tiles)"
+
+    for group in tiledMap.ObjectGroups do
+      printfn $"  ObjectGroup: {group.Name} ({group.Objects.Length} objects)"
+
+    let cameraTarget =
+      match findSpawnPoint tiledMap with
+      | Some pos ->
+        printfn $"Spawn point: {pos}"
+        pos
+      | None ->
+        printfn $"No spawn point found, using center"
+        Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
+
+    let model = {
+      Entities = entities
+      Tileset =
+        if tiledMap.Tilesets.Length > 0 then
+          tiledMap.Tilesets.[0]
+        else
+          failwith "No tilesets found"
+      CameraPosition = createCamera2_5D(cameraTarget, vp).Position
+      CameraTarget = cameraTarget
+    }
 
     model, Cmd.none
 
-let update (msg: Msg) (model: Model) : struct (Model * Cmd<Msg>) =
-    match msg with
-    | Tick gt ->
-        let dt = float32 gt.ElapsedGameTime.TotalSeconds
-        let mutable velocity = model.Velocity
-        let mutable position = model.Position + (velocity * dt)
+  | Error err ->
+    printfn $"Error loading level: {err}"
+    // Return empty model on error
+    let emptyModel = {
+      Entities = [||]
+      Tileset = {
+        FirstGid = 1
+        Name = "Empty"
+        TileCount = 0
+        TileHeight = 64
+        TileWidth = 64
+        Tiles = [||]
+      }
+      CameraPosition = Vector3(0.0f, 0.0f, cameraZOffset)
+      CameraTarget = Vector3(0.0f, 0.0f, 0.0f)
+    }
 
-        // Simple bounce (assuming some bounds, though resolution varies)
-        if position.X < 0.f || position.X > 750.f then
-            velocity.X <- -velocity.X
+    emptyModel, Cmd.none
 
-        { model with
-            Position = position
-            Velocity = velocity },
-        Cmd.none
+let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
+  match msg with
+  | Tick _ -> model, Cmd.none
+  | LevelLoaded _ -> model, Cmd.none
 
-let view (ctx: GameContext) (model: Model) (buffer: PipelineBuffer<RenderCommand>) =
-    let camera = Camera.perspectiveDefaults
+let view
+  (ctx: GameContext)
+  (model: State)
+  (buffer: PipelineBuffer<RenderCommand>)
+  =
+  let vp = ctx.GraphicsDevice.Viewport
+  let camera = createCamera2_5D(model.CameraTarget, vp)
+  // Start rendering with camera and lighting
+  buffer |> Buffer.camera camera |> Buffer.submit
 
-    Buffer.camera camera buffer
-    |> Buffer.draw (draw { at (Vector3(1f, 1f, 1f)) })
-    |> Buffer.submit
+  // Render all entities
+  for entity in model.Entities do
+    entity.ModelPath
+    |> Option.iter(fun path ->
+      let modelAsset = Assets.model path ctx
+      let mesh = Mesh.fromModel modelAsset
+
+      for mesh_ in mesh do
+        buffer
+        |> Buffer.draw(
+          draw {
+            mesh mesh_
+            at entity.Position
+          }
+        )
+        |> Buffer.submit)
+
 
 let program =
-    Program.mkProgram init update
-    |> Program.withAssets
-    |> Program.withRenderer (fun g ->
-        RenderPipeline.create PipelineConfig.defaults g
-        |> PipelineRenderer.create g view)
-    |> Program.withTick Tick
-    |> Program.withConfig (fun (game, graphics) -> game.Content.RootDirectory <- "Content")
+  Program.mkProgram init update
+  |> Program.withAssets
+  |> Program.withRenderer(fun g ->
+    let config =
+      PipelineConfig.defaults
+      |> PipelineConfig.withDefaultLighting(
+        {
+          Lighting.defaultSunlight with
+              AmbientColor = Color.WhiteSmoke
+              AmbientIntensity = 0.7f
+              Lights = [|
+                Directional {
+                  Direction = Vector3.Normalize(Vector3(-0.3f, -1f, -0.2f))
+                  Color = Color(255, 250, 240)
+                  Intensity = 1.0f
+                  Shadow = ValueSome { Bias = 0.001f; NormalBias = 0.02f }
+                  CascadeCount = 4
+                  CascadeSplits = [| 0.05f; 0.15f; 0.5f; 1f |]
+                  SourceRadius = 0.05f
+                }
+              |]
+        }
+      )
+
+    RenderPipeline.create config g |> PipelineRenderer.create g view)
+  |> Program.withTick Tick
+  |> Program.withConfig(fun (game, graphics) ->
+    game.Content.RootDirectory <- "Content"
+    graphics.PreferredBackBufferWidth <- 800
+    graphics.PreferredBackBufferHeight <- 600)

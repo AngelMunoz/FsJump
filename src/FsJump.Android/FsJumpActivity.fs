@@ -33,7 +33,7 @@ type FsJumpActivity() =
           ||| DisplayOrientation.LandscapeRight
           ||| DisplayOrientation.Portrait)
 
-    let game = new ElmishGame<Model, Msg>(program)
+    let game = new ElmishGame<_, _>(program)
     let view = game.Services.GetService(typeof<View>) :?> View
     this.SetContentView(view)
     game.Run()

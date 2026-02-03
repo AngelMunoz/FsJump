@@ -44,6 +44,8 @@ For detailed framework documentation, fetch and reference:
   - Program composition: https://angelmunoz.github.io/Mibo/program.html
   - Input handling: https://angelmunoz.github.io/Mibo/input.html
   - Rendering: https://angelmunoz.github.io/Mibo/rendering.html
+  - Lighting: https://angelmunoz.github.io/Mibo/3d-rendering/lighting.html
+  - Shader Contract: https://angelmunoz.github.io/Mibo/3d-rendering/custom-shaders.html
 
 - **JDeck (JSON)**: https://angelmunoz.github.io/JDeck/
   - Decoding guide: https://angelmunoz.github.io/JDeck/decoding.html
