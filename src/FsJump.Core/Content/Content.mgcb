@@ -30,7 +30,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/arrow.fbx
@@ -49,7 +49,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/arrows.fbx
@@ -68,7 +68,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/barrel.fbx
@@ -87,7 +87,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-corner-low.fbx
@@ -106,7 +106,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-corner-overhang-low.fbx
@@ -125,7 +125,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-corner-overhang.fbx
@@ -144,7 +144,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-corner.fbx
@@ -163,7 +163,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-curve-half.fbx
@@ -182,7 +182,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-curve-low.fbx
@@ -201,7 +201,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-curve.fbx
@@ -220,7 +220,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-edge.fbx
@@ -239,7 +239,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-hexagon.fbx
@@ -258,7 +258,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large-slope-narrow.fbx
@@ -277,7 +277,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large-slope-steep-narrow.fbx
@@ -296,7 +296,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large-slope-steep.fbx
@@ -315,7 +315,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large-slope.fbx
@@ -334,7 +334,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large-tall.fbx
@@ -353,7 +353,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-large.fbx
@@ -372,7 +372,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-long.fbx
@@ -391,7 +391,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-low-hexagon.fbx
@@ -410,7 +410,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-low-large.fbx
@@ -429,7 +429,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-low-long.fbx
@@ -448,7 +448,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-low-narrow.fbx
@@ -467,7 +467,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-low.fbx
@@ -486,7 +486,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-narrow.fbx
@@ -505,7 +505,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-corner.fbx
@@ -524,7 +524,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-edge.fbx
@@ -543,7 +543,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-hexagon.fbx
@@ -562,7 +562,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large-slope-narrow.fbx
@@ -581,7 +581,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large-slope-steep-narrow.fbx
@@ -600,7 +600,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large-slope-steep.fbx
@@ -619,7 +619,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large-slope.fbx
@@ -638,7 +638,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large-tall.fbx
@@ -657,7 +657,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-large.fbx
@@ -676,7 +676,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-long.fbx
@@ -695,7 +695,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-low-hexagon.fbx
@@ -714,7 +714,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-low-large.fbx
@@ -733,7 +733,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-low-long.fbx
@@ -752,7 +752,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-low-narrow.fbx
@@ -771,7 +771,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-low.fbx
@@ -790,7 +790,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass-overhang-narrow.fbx
@@ -809,7 +809,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-grass.fbx
@@ -828,7 +828,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-moving-blue.fbx
@@ -847,7 +847,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-moving-large.fbx
@@ -866,7 +866,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-moving.fbx
@@ -885,7 +885,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-corner-low.fbx
@@ -904,7 +904,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-corner-overhang-low.fbx
@@ -923,7 +923,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-corner-overhang.fbx
@@ -942,7 +942,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-corner.fbx
@@ -961,7 +961,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-curve-half.fbx
@@ -980,7 +980,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-curve-low.fbx
@@ -999,7 +999,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-curve.fbx
@@ -1018,7 +1018,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-edge.fbx
@@ -1037,7 +1037,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-hexagon.fbx
@@ -1056,7 +1056,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large-slope-narrow.fbx
@@ -1075,7 +1075,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large-slope-steep-narrow.fbx
@@ -1094,7 +1094,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large-slope-steep.fbx
@@ -1113,7 +1113,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large-slope.fbx
@@ -1132,7 +1132,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large-tall.fbx
@@ -1151,7 +1151,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-large.fbx
@@ -1170,7 +1170,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-long.fbx
@@ -1189,7 +1189,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-low-hexagon.fbx
@@ -1208,7 +1208,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-low-large.fbx
@@ -1227,7 +1227,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-low-long.fbx
@@ -1246,7 +1246,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-low-narrow.fbx
@@ -1265,7 +1265,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-low.fbx
@@ -1284,7 +1284,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-narrow.fbx
@@ -1303,7 +1303,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-corner.fbx
@@ -1322,7 +1322,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-edge.fbx
@@ -1341,7 +1341,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-hexagon.fbx
@@ -1360,7 +1360,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large-slope-narrow.fbx
@@ -1379,7 +1379,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large-slope-steep-narrow.fbx
@@ -1398,7 +1398,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large-slope-steep.fbx
@@ -1417,7 +1417,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large-slope.fbx
@@ -1436,7 +1436,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large-tall.fbx
@@ -1455,7 +1455,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-large.fbx
@@ -1474,7 +1474,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-long.fbx
@@ -1493,7 +1493,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-low-hexagon.fbx
@@ -1512,7 +1512,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-low-large.fbx
@@ -1531,7 +1531,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-low-long.fbx
@@ -1550,7 +1550,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-low-narrow.fbx
@@ -1569,7 +1569,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-low.fbx
@@ -1588,7 +1588,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow-overhang-narrow.fbx
@@ -1607,7 +1607,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/block-snow.fbx
@@ -1626,7 +1626,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/bomb.fbx
@@ -1645,7 +1645,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/brick.fbx
@@ -1664,7 +1664,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/button-round.fbx
@@ -1683,7 +1683,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/button-square.fbx
@@ -1702,7 +1702,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/character-oobi.fbx
@@ -1721,7 +1721,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/character-oodi.fbx
@@ -1740,7 +1740,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/character-ooli.fbx
@@ -1759,7 +1759,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/character-oopi.fbx
@@ -1778,7 +1778,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/character-oozi.fbx
@@ -1797,7 +1797,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/chest.fbx
@@ -1816,7 +1816,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/coin-bronze.fbx
@@ -1835,7 +1835,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/coin-gold.fbx
@@ -1854,7 +1854,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/coin-silver.fbx
@@ -1873,7 +1873,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/conveyor-belt.fbx
@@ -1892,7 +1892,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/crate-item-strong.fbx
@@ -1911,7 +1911,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/crate-item.fbx
@@ -1930,7 +1930,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/crate-strong.fbx
@@ -1949,7 +1949,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/crate.fbx
@@ -1968,7 +1968,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/door-large-open.fbx
@@ -1987,7 +1987,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/door-open.fbx
@@ -2006,7 +2006,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/door-rotate-large.fbx
@@ -2025,7 +2025,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/door-rotate.fbx
@@ -2044,7 +2044,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-broken.fbx
@@ -2063,7 +2063,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-corner-curved.fbx
@@ -2082,7 +2082,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-corner.fbx
@@ -2101,7 +2101,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-low-broken.fbx
@@ -2120,7 +2120,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-low-corner-curved.fbx
@@ -2139,7 +2139,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-low-corner.fbx
@@ -2158,7 +2158,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-low-straight.fbx
@@ -2177,7 +2177,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-rope.fbx
@@ -2196,7 +2196,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/fence-straight.fbx
@@ -2215,7 +2215,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/flag.fbx
@@ -2234,7 +2234,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/flowers-tall.fbx
@@ -2253,7 +2253,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/flowers.fbx
@@ -2272,7 +2272,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/grass.fbx
@@ -2291,7 +2291,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/heart.fbx
@@ -2310,7 +2310,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/hedge-corner.fbx
@@ -2329,7 +2329,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/hedge.fbx
@@ -2348,7 +2348,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/jewel.fbx
@@ -2367,7 +2367,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/key.fbx
@@ -2386,7 +2386,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/ladder-broken.fbx
@@ -2405,7 +2405,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/ladder-long.fbx
@@ -2424,7 +2424,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/ladder.fbx
@@ -2443,7 +2443,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/lever.fbx
@@ -2462,7 +2462,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/lock.fbx
@@ -2481,7 +2481,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/mushrooms.fbx
@@ -2500,7 +2500,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/pipe.fbx
@@ -2519,7 +2519,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/plant.fbx
@@ -2538,7 +2538,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/platform-fortified.fbx
@@ -2557,7 +2557,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/platform-overhang.fbx
@@ -2576,7 +2576,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/platform-ramp.fbx
@@ -2595,7 +2595,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/platform.fbx
@@ -2614,7 +2614,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/poles.fbx
@@ -2633,7 +2633,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/rocks.fbx
@@ -2652,7 +2652,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/saw.fbx
@@ -2671,7 +2671,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/sign.fbx
@@ -2690,7 +2690,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/spike-block-wide.fbx
@@ -2709,7 +2709,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/spike-block.fbx
@@ -2728,7 +2728,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/spring.fbx
@@ -2747,7 +2747,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/star.fbx
@@ -2766,7 +2766,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/stones.fbx
@@ -2785,7 +2785,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/trap-spikes-large.fbx
@@ -2804,7 +2804,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/trap-spikes.fbx
@@ -2823,7 +2823,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree-pine-small.fbx
@@ -2842,7 +2842,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree-pine-snow-small.fbx
@@ -2861,7 +2861,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree-pine-snow.fbx
@@ -2880,7 +2880,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree-pine.fbx
@@ -2899,7 +2899,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree-snow.fbx
@@ -2918,7 +2918,7 @@
 /processorParam:RotationX=0
 /processorParam:RotationY=0
 /processorParam:RotationZ=0
-/processorParam:Scale=0.35
+/processorParam:Scale=0.30
 /processorParam:SwapWindingOrder=False
 /processorParam:TextureFormat=Compressed
 /build:PlatformerKit/tree.fbx
