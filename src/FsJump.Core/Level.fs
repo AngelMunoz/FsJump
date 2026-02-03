@@ -78,26 +78,57 @@ let wellKnownObjPropsDecoder(json: JsonElement) = decode {
       |> Error
 }
 
+let valueDecoder(jsonElement: JsonElement) =
+  let inline toResultWith e o =
+    match o with
+    | Some v -> Ok v
+    | None -> e()
+
+  let inline noValueErr() =
+    Error <| DecodeError.ofError(jsonElement.Clone(), "Value Not Found")
+
+  Decode.oneOf
+    [
+      Optional.boolean
+      >> Result.bind(toResultWith noValueErr)
+      >> Result.map string
+      Optional.int64
+      >> Result.bind(toResultWith noValueErr)
+      >> Result.map string
+      Optional.float
+      >> Result.bind(toResultWith noValueErr)
+      >> Result.map string
+    ]
+    jsonElement
+  |> Result.mapError(fun _ ->
+    DecodeError.ofError(
+      jsonElement.Clone(),
+      $"Unable to convert this value to a known type"
+    ))
+
 let mapPropertyDecoder(jsonElement: JsonElement) = decode {
   let! name = Required.Property.get ("name", Required.string) jsonElement
   and! propType = Optional.Property.get ("type", Required.string) jsonElement
-  and! value = Optional.Property.get ("value", Required.string) jsonElement
+  and! valueType = Optional.Property.get ("value", valueDecoder) jsonElement
 
   return {
     Name = name
     Type = propType |> Option.defaultValue "string"
-    Value = value
+    Value = propType
   }
 }
 
 let mapObjectDecoder(jsonElement: JsonElement) = decode {
   let! id = Required.Property.get ("id", Required.int) jsonElement
 
-  and! gid =
-    Optional.Property.get ("gid", Required.int) jsonElement
-    |> Result.map(Option.defaultValue 0)
+  and! gidValue =
+    Optional.Property.get ("gid", Required.int64) jsonElement
+    |> Result.map(Option.defaultValue 0L)
 
-  and! x = Required.Property.get ("x", Required.single) jsonElement
+  let gid = int(gidValue &&& 0x1FFFFFFFL)
+
+
+  let! x = Required.Property.get ("x", Required.single) jsonElement
   and! y = Required.Property.get ("y", Required.single) jsonElement
 
   and! width =
@@ -172,11 +203,11 @@ let parseLayers(jsonElement: JsonElement) =
         | "tilelayer" ->
           match tileLayerDecoder layerEl with
           | Ok layer -> layers.Add(layer)
-          | Error _ -> ()
+          | Error e -> printfn $"Failed to decode tile layer: {e}"
         | "objectgroup" ->
           match objectGroupDecoder layerEl with
           | Ok group -> objectGroups.Add(group)
-          | Error _ -> ()
+          | Error e -> printfn $"Failed to decode object group: {e}"
         | _ -> ()
       | _ -> ()
   | _ -> ()
