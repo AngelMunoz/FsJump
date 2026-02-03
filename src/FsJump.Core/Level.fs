@@ -240,7 +240,9 @@ let loadTiledMap(path: string) : Result<TiledMap, string> =
 let tileIdToGid (tileId: int) (tileset: Tileset) : int =
   tileset.FirstGid + tileId
 
-let gidToLocalId (gid: int) (tileset: Tileset) : int = gid - tileset.FirstGid
+let gidToLocalId (gid: int) (tileset: Tileset) : int =
+  let cleanGid = gid &&& 0x1FFFFFFF
+  cleanGid - tileset.FirstGid
 
 let getTileByLocalId (localId: int) (tileset: Tileset) : TilesetTile option =
   tileset.Tiles |> Array.tryFind(fun t -> t.Id = localId)
@@ -256,13 +258,14 @@ let tileIdToFbxPath (tileId: int) (tileset: Tileset) : string option =
 
 let gridToAnchorPosition (gridX: int) (gridY: int) (mapHeight: int) : Vector3 =
   let worldX = float32(gridX) * cellSize + (cellSize / 2.0f)
-  let worldY = float32(mapHeight - gridY) * cellSize
+  let worldY = float32(mapHeight - 1 - gridY) * cellSize
   let worldZ = 0.0f
   Vector3(worldX, worldY, worldZ)
 
-let objectToGridPosition (objX: float32) (objY: float32) (mapHeight: float32) : GridPosition =
+let objectToGridPosition (objX: float32) (objY: float32) : GridPosition =
   let gridX = int(objX / cellSize)
-  let gridY = int((mapHeight - objY) / cellSize)
+  let gridY = int(objY / cellSize)
+
   {
     X = gridX
     Y = gridY
@@ -280,11 +283,7 @@ let parseTileLayer (layer: TileLayer) (tileset: Tileset) : StaticTile[] =
         let gid = layer.Data.[index]
 
         if gid > 0 then
-          let gridPos = {
-            X = x
-            Y = y
-            Anchor = BottomCenter
-          }
+          let gridPos = { X = x; Y = y; Anchor = BottomCenter }
 
           tiles.Add {
             GridPos = gridPos

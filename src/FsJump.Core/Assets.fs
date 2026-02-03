@@ -57,7 +57,7 @@ let entitiesFromObjectGroup
   (ctx: GameContext)
   (group: ObjectGroup)
   (tileset: Tileset)
-  (mapHeight: float32)
+  (mapHeightInCells: int)
   : Entity[] =
   let entities = ResizeArray<Entity>()
 
@@ -71,7 +71,7 @@ let entitiesFromObjectGroup
         | "objective" -> BottomLeft
         | _ -> BottomLeft
 
-      let gridPos = objectToGridPosition obj.X obj.Y mapHeight
+      let gridPos = objectToGridPosition obj.X obj.Y
 
       let entityType =
         match obj.Type.ToLowerInvariant() with
@@ -94,7 +94,10 @@ let entitiesFromObjectGroup
       match tileIdToModelPath obj.Gid tileset with
       | Some modelPath ->
         let anchor = BottomCenter
-        let anchorPos = gridToAnchorPosition gridPos.X gridPos.Y (int mapHeight)
+
+        let anchorPos =
+          gridToAnchorPosition gridPos.X gridPos.Y mapHeightInCells
+
         let worldPos = anchorPos
 
         printfn
@@ -131,7 +134,7 @@ let loadAllLevelEntities (ctx: GameContext) (tiledMap: TiledMap) : Entity[] =
 
   // Parse object groups (Objects, Triggers)
   for group in tiledMap.ObjectGroups do
-    let entities = entitiesFromObjectGroup ctx group tileset mapHeight
+    let entities = entitiesFromObjectGroup ctx group tileset mapHeightInCells
     allEntities.AddRange(entities)
 
   allEntities.ToArray()
@@ -148,8 +151,7 @@ let findSpawnPoint (ctx: GameContext) (tiledMap: TiledMap) : Vector3 option =
 
     match spawnObj with
     | Some obj ->
-      let mapHeight = float32(tiledMap.Height * tiledMap.TileHeight)
-      let gridPos = objectToGridPosition obj.X obj.Y mapHeight
+      let gridPos = objectToGridPosition obj.X obj.Y
       let anchorPos = gridToAnchorPosition gridPos.X gridPos.Y tiledMap.Height
       Some(anchorPos)
     | None -> None
