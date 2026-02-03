@@ -16,7 +16,6 @@ let levelWidth = 32.0f * cellSizeF // 2048 units
 let levelHeight = 15.0f * cellSizeF // 960 units
 let cameraZOffset = 400f
 let cameraFOV = MathHelper.PiOver4
-let modelScale = 0.35f
 
 let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
   let position = Vector3(target.X, target.Y, cameraZOffset)
@@ -127,7 +126,6 @@ let view
         |> Buffer.draw(
           draw {
             mesh mesh_
-            scaledBy modelScale
             at entity.Position
           }
         )

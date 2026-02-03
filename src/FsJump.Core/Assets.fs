@@ -39,7 +39,7 @@ let entitiesFromObjectGroup (group: ObjectGroup) (tileset: Tileset) (mapHeight: 
   for obj in group.Objects do
     if obj.Gid > 0 then
       let worldX = float32 obj.X + (obj.Width / 2.0f)
-      let worldY = mapHeight - float32 obj.Y
+      let worldY = mapHeight - float32 obj.Y + (obj.Height / 2.0f)
       let pos = Vector3(worldX, worldY, 0.0f)
 
       let entityType =
@@ -106,7 +106,7 @@ let findSpawnPoint(tiledMap: TiledMap) : Vector3 option =
     | Some obj ->
       let mapHeight = float32 (tiledMap.Height * tiledMap.TileHeight)
       let worldX = float32 obj.X + (obj.Width / 2.0f)
-      let worldY = mapHeight - float32 obj.Y
+      let worldY = mapHeight - float32 obj.Y + (obj.Height / 2.0f)
       Some(Vector3(worldX, worldY, 0.0f))
     | None -> None
   | None -> None
