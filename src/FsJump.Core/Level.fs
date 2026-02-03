@@ -49,7 +49,7 @@ let tilesetDecoder: Decoder<Tileset> =
       TileCount = tileCount
       TileHeight = tileHeight
       TileWidth = tileWidth
-      Tiles = tiles |> Option.defaultValue [||]
+      Tiles = tiles |> Option.defaultValue Array.empty
     }
   }
 
@@ -62,7 +62,7 @@ let tileLayerDecoder: Decoder<TileLayer> =
     and! data = Optional.Property.array ("data", Required.int) jsonElement
 
     return {
-      Data = data |> Option.defaultValue [||]
+      Data = data |> Option.defaultValue Array.empty
       Height = height
       Width = width
       Name = name
@@ -256,7 +256,7 @@ let tileIdToFbxPath (tileId: int) (tileset: Tileset) : string option =
 
 let layerTileToWorldPosition (x: int) (y: int) (layerHeight: int) : Vector3 =
   let worldX = float32(x * int cellSize) + (cellSize / 2.0f)
-  let worldY = float32((layerHeight - 1 - y) * int cellSize) + (cellSize / 2.0f)
+  let worldY = float32((layerHeight - 1 - y) * int cellSize)
   let worldZ = 0.0f
   Vector3(worldX, worldY, worldZ)
 

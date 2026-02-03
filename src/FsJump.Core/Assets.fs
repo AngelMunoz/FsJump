@@ -33,13 +33,13 @@ let entitiesFromTileLayer (layer: TileLayer) (tileset: Tileset) : Entity[] =
 
   staticTiles |> Array.choose(fun tile -> createStaticEntity tile tileset)
 
-let entitiesFromObjectGroup (group: ObjectGroup) (tileset: Tileset) : Entity[] =
+let entitiesFromObjectGroup (group: ObjectGroup) (tileset: Tileset) (mapHeight: float32) : Entity[] =
   let entities = ResizeArray<Entity>()
 
   for obj in group.Objects do
     if obj.Gid > 0 then
-      let worldX = float32 obj.X + (float32 obj.Width / 2.0f)
-      let worldY = float32 obj.Y - (float32 obj.Height / 2.0f)
+      let worldX = float32 obj.X + (obj.Width / 2.0f)
+      let worldY = mapHeight - float32 obj.Y
       let pos = Vector3(worldX, worldY, 0.0f)
 
       let entityType =
@@ -78,6 +78,7 @@ let loadAllLevelEntities(tiledMap: TiledMap) : Entity[] =
       failwith "No tilesets found in Tiled map"
 
   let allEntities = ResizeArray<Entity>()
+  let mapHeight = float32 (tiledMap.Height * tiledMap.TileHeight)
 
   // Parse tile layers (Base, Decorations)
   for layer in tiledMap.Layers do
@@ -86,7 +87,7 @@ let loadAllLevelEntities(tiledMap: TiledMap) : Entity[] =
 
   // Parse object groups (Objects, Triggers)
   for group in tiledMap.ObjectGroups do
-    let entities = entitiesFromObjectGroup group tileset
+    let entities = entitiesFromObjectGroup group tileset mapHeight
     allEntities.AddRange(entities)
 
   allEntities.ToArray()
@@ -103,8 +104,9 @@ let findSpawnPoint(tiledMap: TiledMap) : Vector3 option =
 
     match spawnObj with
     | Some obj ->
-      let worldX = float32 obj.X + (float32 obj.Width / 2.0f)
-      let worldY = float32 obj.Y - (float32 obj.Height / 2.0f)
+      let mapHeight = float32 (tiledMap.Height * tiledMap.TileHeight)
+      let worldX = float32 obj.X + (obj.Width / 2.0f)
+      let worldY = mapHeight - float32 obj.Y
       Some(Vector3(worldX, worldY, 0.0f))
     | None -> None
   | None -> None

@@ -14,8 +14,9 @@ open FsJump.Core.Assets
 let cellSizeF = 64.0f
 let levelWidth = 32.0f * cellSizeF // 2048 units
 let levelHeight = 15.0f * cellSizeF // 960 units
-let cameraZOffset = 500f
+let cameraZOffset = 400f
 let cameraFOV = MathHelper.PiOver4
+let modelScale = 0.35f
 
 let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
   let position = Vector3(target.X, target.Y, cameraZOffset)
@@ -24,7 +25,7 @@ let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
   |> Camera.lookAt position target
   |> Camera.withUp Vector3.Up
   |> Camera.withFov cameraFOV
-  |> Camera.withAspect(float32(vp.Width / vp.Height))
+  |> Camera.withAspect vp.AspectRatio
   |> Camera.withRange 1.0f 2000f
 
 
@@ -61,6 +62,7 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
       | None ->
         printfn $"No spawn point found, using center"
         Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
+
 
     let model = {
       Entities = entities
@@ -107,7 +109,11 @@ let view
   let vp = ctx.GraphicsDevice.Viewport
   let camera = createCamera2_5D(model.CameraTarget, vp)
   // Start rendering with camera and lighting
-  buffer |> Buffer.camera camera |> Buffer.submit
+  buffer
+  |> Buffer.clear Color.CornflowerBlue
+  |> Buffer.clearDepth
+  |> Buffer.camera camera
+  |> Buffer.submit
 
   // Render all entities
   for entity in model.Entities do
@@ -121,6 +127,7 @@ let view
         |> Buffer.draw(
           draw {
             mesh mesh_
+            scaledBy modelScale
             at entity.Position
           }
         )
@@ -133,24 +140,7 @@ let program =
   |> Program.withRenderer(fun g ->
     let config =
       PipelineConfig.defaults
-      |> PipelineConfig.withDefaultLighting(
-        {
-          Lighting.defaultSunlight with
-              AmbientColor = Color.WhiteSmoke
-              AmbientIntensity = 0.7f
-              Lights = [|
-                Directional {
-                  Direction = Vector3.Normalize(Vector3(-0.3f, -1f, -0.2f))
-                  Color = Color(255, 250, 240)
-                  Intensity = 1.0f
-                  Shadow = ValueSome { Bias = 0.001f; NormalBias = 0.02f }
-                  CascadeCount = 4
-                  CascadeSplits = [| 0.05f; 0.15f; 0.5f; 1f |]
-                  SourceRadius = 0.05f
-                }
-              |]
-        }
-      )
+      |> PipelineConfig.withDefaultLighting Lighting.defaultSunlight
 
     RenderPipeline.create config g |> PipelineRenderer.create g view)
   |> Program.withTick Tick
