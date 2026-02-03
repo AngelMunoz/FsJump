@@ -1,24 +1,22 @@
 module FsJump.Core.ModelBounds
 
-open System
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
-open Mibo.Elmish
 open FsJump.Core.Types
 
 let extractFromModel(model: Model) : ModelBounds =
   let mutable min =
     Vector3(
-      System.Single.MinValue,
-      System.Single.MinValue,
-      System.Single.MinValue
+      System.Single.MaxValue,
+      System.Single.MaxValue,
+      System.Single.MaxValue
     )
 
   let mutable max =
     Vector3(
-      System.Single.MaxValue,
-      System.Single.MaxValue,
-      System.Single.MaxValue
+      System.Single.MinValue,
+      System.Single.MinValue,
+      System.Single.MinValue
     )
 
   for mesh in model.Meshes do
@@ -64,15 +62,3 @@ let calculateOffset (bounds: ModelBounds) (anchor: AnchorPoint) : Vector3 =
   | TopLeft -> Vector3(-bounds.Min.X, -bounds.Max.Y, -bounds.Min.Z)
   | TopCenter -> Vector3(-bounds.Center.X, -bounds.Max.Y, -bounds.Center.Z)
   | BottomLeft -> Vector3(-bounds.Min.X, -bounds.Min.Y, -bounds.Min.Z)
-
-let getOrComputeBounds
-  (ctx: GameContext)
-  (modelPath: string)
-  (getBoundsCache: System.Func<string, ModelBounds option>)
-  : ModelBounds =
-  match getBoundsCache.Invoke(modelPath) with
-  | Some bounds -> bounds
-  | None ->
-    let model = Mibo.Elmish.Assets.model modelPath ctx
-    let bounds = extractFromModel model
-    bounds

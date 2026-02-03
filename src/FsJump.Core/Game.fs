@@ -12,12 +12,10 @@ open FsJump.Core.Level
 open FsJump.Core.Assets
 
 let cellSizeF = 64.0f
-let levelWidth = 32.0f * cellSizeF // 2048 units
-let levelHeight = 15.0f * cellSizeF // 960 units
-let cameraZOffset = 700f
+let cameraZOffset = 400f
 let cameraFOV = MathHelper.PiOver4
 
-let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
+let createCamera2_5D (target: Vector3) (vp: Viewport) : Camera =
   let position = Vector3(target.X, target.Y, cameraZOffset)
 
   Camera.perspectiveDefaults
@@ -26,7 +24,6 @@ let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
   |> Camera.withFov cameraFOV
   |> Camera.withAspect vp.AspectRatio
   |> Camera.withRange 1.0f 2000f
-
 
 let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
   let vp = ctx.GraphicsDevice.Viewport
@@ -41,27 +38,13 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
   match loadTiledMap contentPath with
   | Ok tiledMap ->
     let entities = loadAllLevelEntities ctx tiledMap
-    printfn $"Loaded {entities.Length} entities"
-
-    printfn
-      $"Layers: {tiledMap.Layers.Length}, ObjectGroups: {tiledMap.ObjectGroups.Length}"
-
-    for layer in tiledMap.Layers do
-      printfn
-        $"  Layer: {layer.Name} ({layer.Width}x{layer.Height}, {layer.Data.Length} tiles)"
-
-    for group in tiledMap.ObjectGroups do
-      printfn $"  ObjectGroup: {group.Name} ({group.Objects.Length} objects)"
+    let levelWidth = float32 tiledMap.Width * cellSizeF
+    let levelHeight = float32 tiledMap.Height * cellSizeF
 
     let cameraTarget =
       match findSpawnPoint ctx tiledMap with
-      | Some pos ->
-        printfn $"Spawn point: {pos}"
-        pos
-      | None ->
-        printfn $"No spawn point found, using center"
-        Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
-
+      | Some pos -> pos
+      | None -> Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
 
     let model = {
       Entities = entities
@@ -70,15 +53,15 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
           tiledMap.Tilesets.[0]
         else
           failwith "No tilesets found"
-      CameraPosition = createCamera2_5D(cameraTarget, vp).Position
+      CameraPosition = (createCamera2_5D cameraTarget vp).Position
       CameraTarget = cameraTarget
     }
 
-    model, Cmd.none
+    struct (model, Cmd.none)
 
   | Error err ->
     printfn $"Error loading level: {err}"
-    // Return empty model on error
+
     let emptyModel = {
       Entities = [||]
       Tileset = {
@@ -93,12 +76,12 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
       CameraTarget = Vector3(0.0f, 0.0f, 0.0f)
     }
 
-    emptyModel, Cmd.none
+    struct (emptyModel, Cmd.none)
 
 let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
   match msg with
-  | Tick _ -> model, Cmd.none
-  | LevelLoaded _ -> model, Cmd.none
+  | Tick _ -> struct (model, Cmd.none)
+  | LevelLoaded _ -> struct (model, Cmd.none)
 
 let view
   (ctx: GameContext)
@@ -106,15 +89,14 @@ let view
   (buffer: PipelineBuffer<RenderCommand>)
   =
   let vp = ctx.GraphicsDevice.Viewport
-  let camera = createCamera2_5D(model.CameraTarget, vp)
-  // Start rendering with camera and lighting
+  let camera = createCamera2_5D model.CameraTarget vp
+
   buffer
   |> Buffer.clear Color.CornflowerBlue
   |> Buffer.clearDepth
   |> Buffer.camera camera
   |> Buffer.submit
 
-  // Render all entities
   for entity in model.Entities do
     entity.ModelPath
     |> Option.iter(fun path ->
@@ -130,7 +112,6 @@ let view
           }
         )
         |> Buffer.submit)
-
 
 let program =
   Program.mkProgram init update
