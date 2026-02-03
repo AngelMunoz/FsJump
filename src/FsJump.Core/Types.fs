@@ -76,8 +76,31 @@ type TiledMap = {
 }
 
 [<Struct>]
+type AnchorPoint =
+  | BottomCenter
+  | Center
+  | TopLeft
+  | TopCenter
+  | BottomLeft
+
+type ModelBounds = {
+  Min: Vector3
+  Max: Vector3
+  Center: Vector3
+  Size: Vector3
+  HalfSize: Vector3
+}
+
+[<Struct>]
+type GridPosition = {
+  X: int
+  Y: int
+  Anchor: AnchorPoint
+}
+
+[<Struct>]
 type StaticTile = {
-  Position: Vector3
+  GridPos: GridPosition
   TileId: int
   Scale: float32
 }
@@ -94,9 +117,10 @@ type EntityType =
 [<Struct>]
 type Entity = {
   Id: Guid
-  Position: Vector3
+  WorldPosition: Vector3
   EntityType: EntityType
   ModelPath: string option
+  Bounds: ModelBounds option
 }
 
 type State = {

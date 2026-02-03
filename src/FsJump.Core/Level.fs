@@ -254,11 +254,20 @@ let tileIdToFbxPath (tileId: int) (tileset: Tileset) : string option =
     Some $"PlatformerKit/{imageName}"
   | None -> None
 
-let layerTileToWorldPosition (x: int) (y: int) (layerHeight: int) : Vector3 =
-  let worldX = float32(x * int cellSize) + (cellSize / 2.0f)
-  let worldY = float32((layerHeight - 1 - y) * int cellSize)
+let gridToAnchorPosition (gridX: int) (gridY: int) (mapHeight: int) : Vector3 =
+  let worldX = float32(gridX) * cellSize + (cellSize / 2.0f)
+  let worldY = float32(mapHeight - gridY) * cellSize
   let worldZ = 0.0f
   Vector3(worldX, worldY, worldZ)
+
+let objectToGridPosition (objX: float32) (objY: float32) (mapHeight: float32) : GridPosition =
+  let gridX = int(objX / cellSize)
+  let gridY = int((mapHeight - objY) / cellSize)
+  {
+    X = gridX
+    Y = gridY
+    Anchor = AnchorPoint.BottomCenter
+  }
 
 let parseTileLayer (layer: TileLayer) (tileset: Tileset) : StaticTile[] =
   let tiles = ResizeArray<StaticTile>()
@@ -271,10 +280,14 @@ let parseTileLayer (layer: TileLayer) (tileset: Tileset) : StaticTile[] =
         let gid = layer.Data.[index]
 
         if gid > 0 then
-          let pos = layerTileToWorldPosition x y layer.Height
+          let gridPos = {
+            X = x
+            Y = y
+            Anchor = BottomCenter
+          }
 
           tiles.Add {
-            Position = pos
+            GridPos = gridPos
             TileId = gid
             Scale = 1.0f
           }

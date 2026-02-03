@@ -7,9 +7,18 @@ open Microsoft.Xna.Framework.Graphics
 open Mibo.Elmish
 open FsJump.Core.Types
 open FsJump.Core.Level
+open FsJump.Core.ModelBounds
 
+let private modelBoundsCache = Dictionary<string, ModelBounds>()
 
-let loadModel (ctx: GameContext) (path: string) = Assets.model path ctx
+let getModelBounds (ctx: GameContext) (modelPath: string) : ModelBounds =
+  match modelBoundsCache.TryGetValue(modelPath) with
+  | true, bounds -> bounds
+  | false, _ ->
+    let model = Mibo.Elmish.Assets.model modelPath ctx
+    let bounds = extractFromModel model
+    modelBoundsCache.[modelPath] <- bounds
+    bounds
 
 let loadTexture (ctx: GameContext) (path: string) : Texture2D =
   Mibo.Elmish.Assets.texture path ctx
@@ -17,30 +26,52 @@ let loadTexture (ctx: GameContext) (path: string) : Texture2D =
 let tileIdToModelPath (tileId: int) (tileset: Tileset) : string option =
   tileIdToFbxPath tileId tileset
 
-let createStaticEntity (tile: StaticTile) (tileset: Tileset) : Entity option =
-  match tileIdToModelPath tile.TileId tileset with
-  | Some modelPath ->
-    Some {
-      Id = Guid.NewGuid()
-      Position = tile.Position
-      EntityType = Static tile
-      ModelPath = Some modelPath
-    }
-  | None -> None
+let createStaticEntity
+  (ctx: GameContext)
+  (tile: StaticTile)
+  (tileset: Tileset)
+  (mapHeight: int)
+  : Entity option =
+  let anchorPos = gridToAnchorPosition tile.GridPos.X tile.GridPos.Y mapHeight
 
-let entitiesFromTileLayer (layer: TileLayer) (tileset: Tileset) : Entity[] =
+  Some {
+    Id = Guid.NewGuid()
+    WorldPosition = anchorPos
+    EntityType = Static tile
+    ModelPath = tileIdToModelPath tile.TileId tileset
+    Bounds = None
+  }
+
+let entitiesFromTileLayer
+  (ctx: GameContext)
+  (layer: TileLayer)
+  (tileset: Tileset)
+  (mapHeight: int)
+  : Entity[] =
   let staticTiles = parseTileLayer layer tileset
 
-  staticTiles |> Array.choose(fun tile -> createStaticEntity tile tileset)
+  staticTiles
+  |> Array.choose(fun tile -> createStaticEntity ctx tile tileset mapHeight)
 
-let entitiesFromObjectGroup (group: ObjectGroup) (tileset: Tileset) (mapHeight: float32) : Entity[] =
+let entitiesFromObjectGroup
+  (ctx: GameContext)
+  (group: ObjectGroup)
+  (tileset: Tileset)
+  (mapHeight: float32)
+  : Entity[] =
   let entities = ResizeArray<Entity>()
 
   for obj in group.Objects do
     if obj.Gid > 0 then
-      let worldX = float32 obj.X + (obj.Width / 2.0f)
-      let worldY = mapHeight - float32 obj.Y + (obj.Height / 2.0f)
-      let pos = Vector3(worldX, worldY, 0.0f)
+      let anchor =
+        match obj.Type.ToLowerInvariant() with
+        | "spawn" -> BottomLeft
+        | "danger" -> BottomLeft
+        | "threadmill" -> BottomLeft
+        | "objective" -> BottomLeft
+        | _ -> BottomLeft
+
+      let gridPos = objectToGridPosition obj.X obj.Y mapHeight
 
       let entityType =
         match obj.Type.ToLowerInvariant() with
@@ -52,25 +83,37 @@ let entitiesFromObjectGroup (group: ObjectGroup) (tileset: Tileset) (mapHeight: 
           if group.Name = "Triggers" then
             EntityType.Player
           else
+            let anchor = BottomCenter
+
             EntityType.Static {
-              Position = pos
+              GridPos = { gridPos with Anchor = anchor }
               TileId = obj.Gid
               Scale = 1.0f
             }
 
       match tileIdToModelPath obj.Gid tileset with
       | Some modelPath ->
+        let anchor = BottomCenter
+        let anchorPos = gridToAnchorPosition gridPos.X gridPos.Y (int mapHeight)
+        let worldPos = anchorPos
+
+        printfn
+          $"Spawn object: X={obj.X}, Y={obj.Y}, gridX={gridPos.X}, gridY={gridPos.Y}, worldX={anchorPos.X}, worldY={anchorPos.Y}"
+
         entities.Add {
           Id = Guid.NewGuid()
-          Position = pos
+          WorldPosition = worldPos
           EntityType = entityType
           ModelPath = Some modelPath
+          Bounds = None
         }
       | None -> ()
 
   entities.ToArray()
 
-let loadAllLevelEntities(tiledMap: TiledMap) : Entity[] =
+let loadAllLevelEntities (ctx: GameContext) (tiledMap: TiledMap) : Entity[] =
+  modelBoundsCache.Clear()
+
   let tileset =
     if tiledMap.Tilesets.Length > 0 then
       tiledMap.Tilesets.[0]
@@ -78,21 +121,22 @@ let loadAllLevelEntities(tiledMap: TiledMap) : Entity[] =
       failwith "No tilesets found in Tiled map"
 
   let allEntities = ResizeArray<Entity>()
-  let mapHeight = float32 (tiledMap.Height * tiledMap.TileHeight)
+  let mapHeight = float32(tiledMap.Height * tiledMap.TileHeight)
+  let mapHeightInCells = tiledMap.Height
 
   // Parse tile layers (Base, Decorations)
   for layer in tiledMap.Layers do
-    let entities = entitiesFromTileLayer layer tileset
+    let entities = entitiesFromTileLayer ctx layer tileset mapHeightInCells
     allEntities.AddRange(entities)
 
   // Parse object groups (Objects, Triggers)
   for group in tiledMap.ObjectGroups do
-    let entities = entitiesFromObjectGroup group tileset mapHeight
+    let entities = entitiesFromObjectGroup ctx group tileset mapHeight
     allEntities.AddRange(entities)
 
   allEntities.ToArray()
 
-let findSpawnPoint(tiledMap: TiledMap) : Vector3 option =
+let findSpawnPoint (ctx: GameContext) (tiledMap: TiledMap) : Vector3 option =
   let spawnGroup =
     tiledMap.ObjectGroups |> Array.tryFind(fun g -> g.Name = "Triggers")
 
@@ -104,9 +148,9 @@ let findSpawnPoint(tiledMap: TiledMap) : Vector3 option =
 
     match spawnObj with
     | Some obj ->
-      let mapHeight = float32 (tiledMap.Height * tiledMap.TileHeight)
-      let worldX = float32 obj.X + (obj.Width / 2.0f)
-      let worldY = mapHeight - float32 obj.Y + (obj.Height / 2.0f)
-      Some(Vector3(worldX, worldY, 0.0f))
+      let mapHeight = float32(tiledMap.Height * tiledMap.TileHeight)
+      let gridPos = objectToGridPosition obj.X obj.Y mapHeight
+      let anchorPos = gridToAnchorPosition gridPos.X gridPos.Y tiledMap.Height
+      Some(anchorPos)
     | None -> None
   | None -> None

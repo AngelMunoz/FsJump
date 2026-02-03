@@ -14,7 +14,7 @@ open FsJump.Core.Assets
 let cellSizeF = 64.0f
 let levelWidth = 32.0f * cellSizeF // 2048 units
 let levelHeight = 15.0f * cellSizeF // 960 units
-let cameraZOffset = 400f
+let cameraZOffset = 700f
 let cameraFOV = MathHelper.PiOver4
 
 let createCamera2_5D(target: Vector3, vp: Viewport) : Camera =
@@ -40,7 +40,7 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
 
   match loadTiledMap contentPath with
   | Ok tiledMap ->
-    let entities = loadAllLevelEntities tiledMap
+    let entities = loadAllLevelEntities ctx tiledMap
     printfn $"Loaded {entities.Length} entities"
 
     printfn
@@ -54,7 +54,7 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
       printfn $"  ObjectGroup: {group.Name} ({group.Objects.Length} objects)"
 
     let cameraTarget =
-      match findSpawnPoint tiledMap with
+      match findSpawnPoint ctx tiledMap with
       | Some pos ->
         printfn $"Spawn point: {pos}"
         pos
@@ -118,7 +118,7 @@ let view
   for entity in model.Entities do
     entity.ModelPath
     |> Option.iter(fun path ->
-      let modelAsset = Assets.model path ctx
+      let modelAsset = Mibo.Elmish.Assets.model path ctx
       let mesh = Mesh.fromModel modelAsset
 
       for mesh_ in mesh do
@@ -126,7 +126,7 @@ let view
         |> Buffer.draw(
           draw {
             mesh mesh_
-            at entity.Position
+            at entity.WorldPosition
           }
         )
         |> Buffer.submit)

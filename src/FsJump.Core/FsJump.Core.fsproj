@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="Types.fs" />
     <Compile Include="Level.fs" />
+    <Compile Include="ModelBounds.fs" />
     <Compile Include="Assets.fs" />
     <Compile Include="Game.fs" />
   </ItemGroup>
