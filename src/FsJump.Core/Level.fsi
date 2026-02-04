@@ -14,4 +14,4 @@ module Level =
   val objectToAnchorPosition:
     objX: float32 -> objY: float32 -> mapHeightPixels: float32 -> Vector3
 
-  val parseTileLayer: layer: TileLayer -> tileset: Tileset -> StaticTile[]
+  val parseTileLayer: layer: TileLayer -> StaticTile[]
