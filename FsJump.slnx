@@ -6,4 +6,7 @@
     <!-- <Project Path="src/FsJump.Android/FsJump.Android.fsproj" /> -->
     <!-- <Project Path="src/FsJump.iOS/FsJump.iOS.fsproj" /> -->
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FsJump.Core.Tests/FsJump.Core.Tests.fsproj" />
+  </Folder>
 </Solution>
