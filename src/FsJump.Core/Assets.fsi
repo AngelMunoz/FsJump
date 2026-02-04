@@ -10,3 +10,5 @@ module Assets =
   val loadAllLevelEntities: ctx: GameContext -> tiledMap: TiledMap -> Entity[]
 
   val findSpawnPoint: ctx: GameContext -> tiledMap: TiledMap -> Vector3 option
+
+  val entitiesToPhysicsBodies: entities: Entity[] -> PhysicsBody[]

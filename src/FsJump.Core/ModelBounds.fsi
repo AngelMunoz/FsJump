@@ -5,6 +5,6 @@ open Microsoft.Xna.Framework.Graphics
 open FsJump.Core.Types
 
 module ModelBounds =
-    val extractFromModel : model:Model -> ModelBounds
+  val extractFromModel: model: Model -> ModelBounds
 
-    val calculateOffset : bounds:ModelBounds -> anchor:AnchorPoint -> Vector3
+  val calculateOffset: bounds: ModelBounds -> anchor: AnchorPoint -> Vector3

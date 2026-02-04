@@ -135,3 +135,22 @@ module Assets =
     |> Option.map(fun obj ->
       let mapHeightPixels = float32(tiledMap.Height * tiledMap.TileHeight)
       objectToAnchorPosition obj.X obj.Y mapHeightPixels)
+
+  /// Convert static tile entities to physics bodies for collision
+  let entitiesToPhysicsBodies(entities: Entity[]) =
+    entities
+    |> Array.choose(fun entity ->
+      match entity.EntityType with
+      | Static _ ->
+        // Create a box collider for static tiles
+        // Use standard tile size (64x64x64) for now
+        // Could use entity.Bounds if available for more precision
+        let size = Vector3(cellSize, cellSize, cellSize)
+
+        Some {
+          Position = entity.WorldPosition
+          Velocity = Vector3.Zero
+          Shape = Box size
+          IsStatic = true
+        }
+      | _ -> None)

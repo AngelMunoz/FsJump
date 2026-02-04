@@ -2,6 +2,7 @@ module FsJump.Core.Types
 
 open System
 open Microsoft.Xna.Framework
+open Mibo.Input
 
 let cellSize = 64.0f
 
@@ -92,11 +93,7 @@ type ModelBounds = {
 }
 
 [<Struct>]
-type GridPosition = {
-  X: int
-  Y: int
-  Anchor: AnchorPoint
-}
+type GridPosition = { X: int; Y: int; Anchor: AnchorPoint }
 
 [<Struct>]
 type StaticTile = {
@@ -123,13 +120,63 @@ type Entity = {
   Bounds: ModelBounds option
 }
 
+// ============================================
+// Player & Physics Types
+// ============================================
+
+[<Struct>]
+type PlayerAction =
+  | MoveLeft
+  | MoveRight
+  | Jump
+
+type PlayerState = {
+  Position: Vector3
+  Velocity: Vector3
+  IsGrounded: bool
+  GroundNormal: Vector3
+}
+
+[<Struct>]
+type CollisionShape =
+  | Box of size: Vector3
+  | Capsule of radius: float32 * height: float32
+
+type PhysicsBody = {
+  Position: Vector3
+  Velocity: Vector3
+  Shape: CollisionShape
+  IsStatic: bool
+}
+
+type GroundInfo = {
+  IsGrounded: bool
+  GroundHeight: float32
+  GroundNormal: Vector3
+  SlopeAngle: float32
+}
+
+[<Struct>]
+type SurfaceType =
+  | Flat
+  | Slope of angle: float32
+  | Steep
+
+// ============================================
+// Game State & Messages
+// ============================================
+
 type State = {
   Entities: Entity[]
+  Player: PlayerState
+  StaticBodies: PhysicsBody[]
   Tileset: Tileset
   CameraPosition: Vector3
   CameraTarget: Vector3
+  Actions: ActionState<PlayerAction>
 }
 
 type Msg =
   | Tick of GameTime
   | LevelLoaded of TiledMap
+  | InputMapped of ActionState<PlayerAction>

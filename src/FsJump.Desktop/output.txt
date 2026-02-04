@@ -1,0 +1,8 @@
+Spawn point: {X:98 Y:273 Z:0}
+Static bodies count: 97
+Body 0: pos={X:1248 Y:768 Z:0}
+Body 1: pos={X:1312 Y:768 Z:0}
+Body 2: pos={X:1376 Y:768 Z:0}
+Body 3: pos={X:1440 Y:768 Z:0}
+Body 4: pos={X:1504 Y:768 Z:0}
+InputMapped received: Held=set [], Started=set []
