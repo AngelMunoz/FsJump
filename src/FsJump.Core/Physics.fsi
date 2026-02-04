@@ -18,6 +18,10 @@ type PhysicsConfig = {
 
 module Physics =
   val DefaultConfig: PhysicsConfig
+  
+  // Direction constants for Y-down coordinate system
+  val Up: Vector3    // (0, -1, 0) - upward in Y-down coordinates
+  val Down: Vector3  // (0, 1, 0) - downward in Y-down coordinates
 
   // Movement & forces
   val applyGravity:

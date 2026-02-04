@@ -24,7 +24,7 @@ let tests =
 
         Expect.equal result.X 0.0f "X velocity should be unchanged"
         Expect.equal result.Z 0.0f "Z velocity should be unchanged"
-        Expect.isLessThan result.Y 0.0f "Y velocity should decrease (gravity)"
+        Expect.isGreaterThan result.Y 0.0f "Y velocity should increase (gravity in Y-down coordinates)"
 
       testCase "accumulates over time"
       <| fun _ ->
@@ -34,10 +34,10 @@ let tests =
         let v1 = Physics.applyGravity config Vector3.Zero dt
         let v2 = Physics.applyGravity config v1 dt
 
-        Expect.isLessThan
+        Expect.isGreaterThan
           v2.Y
           v1.Y
-          "Velocity should increase downward over time"
+          "Velocity should increase downward over time (Y-down coordinates)"
 
       testCase "preserves horizontal velocity"
       <| fun _ ->
@@ -48,7 +48,7 @@ let tests =
         let result = Physics.applyGravity config velocity dt
 
         Expect.equal result.X 100.0f "X velocity should be preserved"
-        Expect.isLessThan result.Y 50.0f "Y velocity should decrease"
+        Expect.isGreaterThan result.Y 50.0f "Y velocity should increase (downward in Y-down coordinates)"
     ]
 
     // ============================================
@@ -132,13 +132,13 @@ let tests =
           Position = Vector3.Zero
           Velocity = Vector3.Zero
           IsGrounded = true
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up // In Y-down, Up = (0, -1, 0)
         }
 
         let result = Physics.tryJump config player true
 
-        Expect.isGreaterThan result.Y 0.0f "Should have upward velocity"
-        Expect.equal result.Y 400.0f "Should have exact jump velocity"
+        Expect.isLessThan result.Y 0.0f "Should have upward velocity (negative Y in Y-down)"
+        Expect.equal result.Y -400.0f "Should have exact jump velocity (negative)"
 
       testCase "does not jump when not grounded"
       <| fun _ ->
@@ -148,7 +148,7 @@ let tests =
           Position = Vector3.Zero
           Velocity = Vector3(50.0f, -100.0f, 0.0f)
           IsGrounded = false
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up
         }
 
         let result = Physics.tryJump config player true
@@ -158,14 +158,14 @@ let tests =
       testCase "does not jump on steep slope"
       <| fun _ ->
         let config = Physics.DefaultConfig
-        // 60 degree slope - normal.Y = cos(60°) = 0.5
-        // For a 60° slope: normal = (sin(60°), cos(60°), 0) = (0.866, 0.5, 0)
-        let steepNormal = Vector3(0.866f, 0.5f, 0.0f) |> Vector3.Normalize
-        // Verify the normal.Y is approximately 0.5 (60 degrees)
-        Expect.isLessThan
+        // 60 degree slope in Y-down coordinates
+        // For a 60° slope pointing upward: normal = (sin(60°), -cos(60°), 0) = (0.866, -0.5, 0)
+        let steepNormal = Vector3(0.866f, -0.5f, 0.0f) |> Vector3.Normalize
+        // Verify the normal.Y is approximately -0.5 (60 degrees from up)
+        Expect.isGreaterThan
           steepNormal.Y
-          0.707f
-          "Test setup: normal.Y should be < 0.707 for steep slope"
+          -0.707f
+          "Test setup: normal.Y should be > -0.707 for steep slope in Y-down"
 
         let player = {
           Position = Vector3.Zero
@@ -186,7 +186,7 @@ let tests =
           Position = Vector3.Zero
           Velocity = Vector3.Zero
           IsGrounded = true
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up
         }
 
         let result = Physics.tryJump config player false
@@ -200,30 +200,31 @@ let tests =
     testList "tryCutJump" [
       testCase "cuts jump when released and above min velocity"
       <| fun _ ->
-        let velocity = Vector3(0.0f, 300.0f, 0.0f)
+        // In Y-down: upward velocity is negative
+        let velocity = Vector3(0.0f, -300.0f, 0.0f)
         let minJumpVel = 200.0f
 
         let result = Physics.tryCutJump velocity true minJumpVel
 
-        Expect.equal result.Y 200.0f "Should cut to min jump velocity"
+        Expect.equal result.Y -200.0f "Should cut to min jump velocity (negative in Y-down)"
 
       testCase "does not cut when below min velocity"
       <| fun _ ->
-        let velocity = Vector3(0.0f, 150.0f, 0.0f)
+        let velocity = Vector3(0.0f, -150.0f, 0.0f)
         let minJumpVel = 200.0f
 
         let result = Physics.tryCutJump velocity true minJumpVel
 
-        Expect.equal result.Y 150.0f "Should not cut when already below min"
+        Expect.equal result.Y -150.0f "Should not cut when already below min"
 
       testCase "does not cut when jump not released"
       <| fun _ ->
-        let velocity = Vector3(0.0f, 300.0f, 0.0f)
+        let velocity = Vector3(0.0f, -300.0f, 0.0f)
         let minJumpVel = 200.0f
 
         let result = Physics.tryCutJump velocity false minJumpVel
 
-        Expect.equal result.Y 300.0f "Should not cut when jump still held"
+        Expect.equal result.Y -300.0f "Should not cut when jump still held"
     ]
 
     // ============================================
@@ -237,11 +238,16 @@ let tests =
               PlayerHeight = 64.0f
               PlayerRadius = 16.0f
         }
-
-        let playerPos = Vector3(0.0f, 64.0f, 0.0f) // Standing on ground at y=0
+        // In Y-down coordinates: ground is at higher Y values
+        // Box at y=100 with size 64 has top surface at y=100-32=68
+        // Player at y=50 is above the box (lower Y = higher in the air)
+        // Ray origin: player.Y + (height/2 - radius) = 50 + (32-16) = 66
+        // Ray casts downward (positive Y) from 66, hits box top at 68
+        // Distance = 68-66 = 2, which is < checkDist (16+2=18), so should hit
+        let playerPos = Vector3(0.0f, 50.0f, 0.0f)
 
         let groundBody = {
-          Position = Vector3(0.0f, 0.0f, 0.0f)
+          Position = Vector3(0.0f, 100.0f, 0.0f) // Box center at y=100
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
@@ -250,7 +256,8 @@ let tests =
         let result = Physics.checkGrounded config playerPos [| groundBody |]
 
         Expect.isTrue result.IsGrounded "Should be grounded"
-        Expect.equal result.GroundNormal Vector3.Up "Ground normal should be up"
+        // In Y-down, Up = (0, -1, 0) which is Physics.Up
+        Expect.equal result.GroundNormal Physics.Up "Ground normal should be up"
 
         Expect.equal
           result.SlopeAngle
@@ -276,14 +283,14 @@ let tests =
       testCase "detects slope angle"
       <| fun _ ->
         let config = Physics.DefaultConfig
-        // Player directly above box center
-        // Raycast origin: playerPos.Y - 32 + 16 = playerPos.Y - 16
-        // For playerPos.Y = 50: ray origin at 34, looking down to box top at 32
-        // Distance = 2, which is < checkDist (16 + 0.1 = 16.1), so should hit
+        // In Y-down coordinates: 
+        // Raycast origin: playerPos.Y + (height/2 - radius) = playerPos.Y + 16
+        // For playerPos.Y = 50: ray origin at 66, looking down (positive Y) to box top at 68
+        // Distance = 2, which is < checkDist (16 + 2.0 = 18.0), so should hit
         let playerPos = Vector3(0.0f, 50.0f, 0.0f)
 
         let groundBody = {
-          Position = Vector3(0.0f, 0.0f, 0.0f) // Box centered at origin, top at 32
+          Position = Vector3(0.0f, 100.0f, 0.0f) // Box centered at y=100, top at y=68
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
@@ -316,7 +323,7 @@ let tests =
           Position = Vector3(0.0f, 100.0f, 0.0f)
           Velocity = Vector3(10.0f, 0.0f, 0.0f)
           IsGrounded = false
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up
         }
 
         let dt = 0.016f
@@ -341,7 +348,7 @@ let tests =
           Position = Vector3(-40.0f, 32.0f, 0.0f) // Close to box left edge (-32)
           Velocity = Vector3(500.0f, 0.0f, 0.0f) // Moving fast right into box
           IsGrounded = false
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up
         }
 
         let wall = {
@@ -374,18 +381,18 @@ let tests =
               PlayerRadius = 16.0f
               PlayerHeight = 64.0f
         }
-        // Box at (0,0) with size 64x64 has top at y=32
-        // Player center at y=60 with radius 16 means bottom at y=44
-        // Distance to box top = 44 - 32 = 12, which is < radius, so collision should happen
+        // In Y-down coordinates: falling means increasing Y
+        // Box at (0,100) with size 64x64 has top at y=100-32=68
+        // Player at y=50 with radius 16, falling downward (positive Y velocity)
         let player = {
-          Position = Vector3(0.0f, 60.0f, 0.0f) // Close to box top (32 + 16 radius = 48)
-          Velocity = Vector3(0.0f, -200.0f, 0.0f) // Falling down fast
+          Position = Vector3(0.0f, 50.0f, 0.0f) // Above box (lower Y = higher in air)
+          Velocity = Vector3(0.0f, 200.0f, 0.0f) // Falling down fast (positive Y)
           IsGrounded = false
-          GroundNormal = Vector3.Up
+          GroundNormal = Physics.Up
         }
 
         let ground = {
-          Position = Vector3(0.0f, 0.0f, 0.0f)
+          Position = Vector3(0.0f, 100.0f, 0.0f) // Box center at y=100
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
@@ -398,7 +405,7 @@ let tests =
 
         // After landing, should be grounded and Y velocity should be 0 or reflected
         Expect.isTrue wasGrounded "Should be grounded after landing"
-        Expect.isGreaterThan newPos.Y 32.0f "Should be above box top"
+        Expect.isLessThan newPos.Y 68.0f "Should be at or below box top (lower Y = above box)"
     ]
 
     // ============================================
@@ -476,7 +483,7 @@ let tests =
     <| fun _ ->
       let config = Physics.createConfig()
 
-      Expect.equal config.Gravity.Y -900.0f "Default gravity should be -900"
+      Expect.equal config.Gravity.Y 900.0f "Default gravity should be 900 (positive Y = downward)"
       Expect.equal config.MoveSpeed 200.0f "Default move speed should be 200"
 
       Expect.equal

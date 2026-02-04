@@ -140,11 +140,6 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
       left + right
 
     let jumpPressed = keyboard.IsKeyDown(Keys.Up) || keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Space)
-    let jumpRequested = jumpPressed && not model.Player.IsGrounded
-
-    // Check grounded state
-    let groundInfo =
-      Physics.checkGrounded config model.Player.Position model.StaticBodies
 
     // Start with current velocity
     let velocity = model.Player.Velocity
@@ -152,37 +147,39 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     // Apply movement
     let velocity = Physics.applyMovement config horizontalInput velocity
 
-    // Apply jump if requested and grounded
+    // Apply jump if grounded (use previous frame's grounded state for responsiveness)
     let velocity =
-      if jumpPressed && groundInfo.IsGrounded then
-        Vector3(velocity.X, config.JumpVelocity, 0.0f)
+      if jumpPressed && model.Player.IsGrounded then
+        Vector3(velocity.X, -config.JumpVelocity, 0.0f)  // Negative because Y increases downward
       else
         velocity
 
-    // Apply gravity
+    // Apply gravity (positive Y because Y increases downward like Tiled)
     let velocity = Physics.applyGravity config velocity dt
 
     // Move with collision
     let playerState = {
       model.Player with
         Velocity = velocity
-        IsGrounded = groundInfo.IsGrounded
-        GroundNormal = groundInfo.GroundNormal
     }
 
     let struct (newPos, newVel, wasGrounded) =
       Physics.moveAndSlide config playerState model.StaticBodies dt
 
+    // Check grounded at the NEW position after movement
+    let groundInfo =
+      Physics.checkGrounded config newPos model.StaticBodies
+
     let player = {
       Position = newPos
       Velocity = newVel
-      IsGrounded = wasGrounded
+      IsGrounded = wasGrounded || groundInfo.IsGrounded  // Either collision-based or raycast-based
       GroundNormal = groundInfo.GroundNormal
     }
 
-    // Debug output (only when moving or jumping)
-    if horizontalInput <> 0.0f || jumpPressed then
-      printfn $"Input: h={horizontalInput}, jump={jumpPressed}, Pos=({newPos.X:F1},{newPos.Y:F1}), Vel=({newVel.X:F1},{newVel.Y:F1})"
+    // Debug output (when moving/jumping)
+    if horizontalInput <> 0.0f || jumpPressed || Math.Abs(newVel.Y) > 10.0f then
+      printfn $"h={horizontalInput}, jump={jumpPressed}, grounded={model.Player.IsGrounded}, Pos=({newPos.X:F0},{newPos.Y:F0}), Vel=({newVel.X:F0},{newVel.Y:F0})"
 
     // Update camera to follow player
     let cameraTarget = Vector3(newPos.X, newPos.Y, 0.0f)

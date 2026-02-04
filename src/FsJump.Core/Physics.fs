@@ -28,13 +28,17 @@ module Physics =
   [<Literal>]
   let MaxSlopeAngleCos = 0.707f // cos(45°)
 
+  // In Y-down coordinates, "up" is negative Y
+  let Up = Vector3(0.0f, -1.0f, 0.0f)
+  let Down = Vector3(0.0f, 1.0f, 0.0f)
+
   let DefaultConfig = {
-    Gravity = Vector3(0.0f, -900.0f, 0.0f)
+    Gravity = Vector3(0.0f, 900.0f, 0.0f)  // Positive Y because Y increases downward (Tiled style)
     MoveSpeed = 200.0f
     JumpVelocity = 400.0f
     MinJumpVelocity = 200.0f
     MaxSlopeAngleDegrees = 45.0f
-    GroundCheckDistance = 0.1f
+    GroundCheckDistance = 2.0f // Increased for better detection
     Friction = 0.8f
     PlayerRadius = 16.0f
     PlayerHeight = 64.0f
@@ -44,8 +48,10 @@ module Physics =
   // Internal Helpers
   // ============================================
 
+  // In our coordinate system, Y increases downward (like Tiled)
+  // So "bottom" means higher Y value
   let getCapsuleBottom (position: Vector3) (height: float32) =
-    position - Vector3(0.0f, height / 2.0f, 0.0f)
+    position + Vector3(0.0f, height / 2.0f, 0.0f)
 
   let raycastPlane (rayOrigin: Vector3) (rayDir: Vector3) (planeY: float32) =
     if Math.Abs(rayDir.Y) < Epsilon then
@@ -82,7 +88,8 @@ module Physics =
     if dot < 0.0f then velocity - (dot * normal) else velocity
 
   let isWalkableSlope (maxAngleCos: float32) (normal: Vector3) =
-    normal.Y >= maxAngleCos
+    // In Y-down coordinates, walkable surfaces have normals pointing up (negative Y)
+    normal.Y <= -maxAngleCos
 
   // ============================================
   // Public API
@@ -116,12 +123,13 @@ module Physics =
     (jumpRequested: bool)
     =
     // Use strict comparison - only jump if strictly walkable (not on steep slopes)
+    // In Y-down coordinates, walkable surfaces have normals pointing up (negative Y)
     if
       jumpRequested
       && player.IsGrounded
-      && player.GroundNormal.Y > MaxSlopeAngleCos
+      && player.GroundNormal.Y < -MaxSlopeAngleCos
     then
-      Vector3(player.Velocity.X, config.JumpVelocity, 0.0f)
+      Vector3(player.Velocity.X, -config.JumpVelocity, 0.0f) // Negative for upward in Y-down
     else
       player.Velocity
 
@@ -130,8 +138,10 @@ module Physics =
     (jumpReleased: bool)
     (minJumpVelocity: float32)
     =
-    if jumpReleased && velocity.Y > minJumpVelocity then
-      Vector3(velocity.X, minJumpVelocity, 0.0f)
+    // In Y-down coordinates, upward velocity is negative
+    // Cut if moving up faster than min (velocity.Y < -minJumpVelocity)
+    if jumpReleased && velocity.Y < -minJumpVelocity then
+      Vector3(velocity.X, -minJumpVelocity, 0.0f)
     else
       velocity
 
@@ -140,12 +150,16 @@ module Physics =
     (playerPos: Vector3)
     (staticBodies: PhysicsBody[])
     =
+    // In Y-down coordinates, the "bottom" of the capsule is at higher Y
+    // Ray starts near the bottom of the player and casts downward (positive Y)
     let rayOrigin =
       playerPos
-      - Vector3(0.0f, config.PlayerHeight / 2.0f - config.PlayerRadius, 0.0f)
+      + Vector3(0.0f, config.PlayerHeight / 2.0f - config.PlayerRadius, 0.0f)
 
-    let rayDir = Vector3.Down
+    let rayDir = Vector3(0.0f, 1.0f, 0.0f) // Downward in Y-down coordinate system
     let checkDist = config.PlayerRadius + config.GroundCheckDistance
+
+
 
     let mutable closestHit = Single.MaxValue
     let mutable groundY = Single.MinValue
@@ -155,8 +169,8 @@ module Physics =
     for body in staticBodies do
       match body.Shape with
       | Box size ->
-        // Simple raycast down against box top surface
-        let boxTop = body.Position.Y + size.Y / 2.0f
+        // In Y-down coordinates, "top" surface is at minimum Y (facing upward)
+        let boxTop = body.Position.Y - size.Y / 2.0f
 
         match raycastPlane rayOrigin rayDir boxTop with
         | Some(hitPoint, t) when t <= checkDist ->
@@ -164,21 +178,22 @@ module Physics =
             if t < closestHit then
               closestHit <- t
               groundY <- boxTop
-              // Estimate normal based on hit position relative to box
-              let closest = closestPointOnBox hitPoint body.Position size
-              let toCenter = body.Position - hitPoint
 
+              // In Y-down, the normal pointing UP is (0, -1, 0)
+              // The hit is on the top surface, so the normal should point up (negative Y)
               let normal =
-                if toCenter.LengthSquared() > Epsilon then
-                  let n =
-                    Vector3(toCenter.X, Math.Max(0.0f, toCenter.Y), toCenter.Z)
+                // If hit is on the top surface (min Y of box), normal points up (negative Y)
+                if Math.Abs(hitPoint.Y - boxTop) < Epsilon then
+                  Vector3(0.0f, -1.0f, 0.0f) // Up in Y-down coordinates
+                else
+                  // For other surfaces, estimate from geometry
+                  let closest = closestPointOnBox hitPoint body.Position size
+                  let surfaceToCenter = body.Position - closest
 
-                  if n.LengthSquared() > Epsilon then
-                    Vector3.Normalize(n)
+                  if surfaceToCenter.LengthSquared() > Epsilon then
+                    Vector3.Normalize(surfaceToCenter)
                   else
                     Vector3.Up
-                else
-                  Vector3.Up
 
               groundNormal <- normal
               foundGround <- true
@@ -186,7 +201,8 @@ module Physics =
       | _ -> ()
 
     let slopeAngle =
-      let angleRad = Math.Acos(float(Math.Clamp(groundNormal.Y, -1.0f, 1.0f)))
+      // Angle from UP direction. In Y-down, UP is (0,-1,0), so we use -normal.Y
+      let angleRad = Math.Acos(float(Math.Clamp(-groundNormal.Y, -1.0f, 1.0f)))
       float32(angleRad * 180.0 / Math.PI)
 
     {
@@ -234,12 +250,19 @@ module Physics =
             // Handle case when center is inside box (dist ~ 0)
             let normal, penetration, fromInside =
               if dist < Epsilon then
-                // Inside box - push up and use velocity direction to determine normal
+                // Inside box - determine push direction based on velocity or default to up
+                // Don't use negated velocity if it's mostly vertical (can shoot player up/down)
                 let pushDir =
                   if newVel.LengthSquared() > Epsilon then
-                    -Vector3.Normalize(newVel)
+                    let velNorm = Vector3.Normalize(newVel)
+                    // If velocity is mostly horizontal, push opposite to it
+                    // If mostly vertical, push up (negative Y in Y-down)
+                    if Math.Abs(velNorm.X) > Math.Abs(velNorm.Y) then
+                      -velNorm
+                    else
+                      Up
                   else
-                    Vector3.Up
+                    Up
 
                 pushDir, radius, true
               else
@@ -254,7 +277,8 @@ module Physics =
 
             // Check if this is ground contact - but NOT if we were inside the box
             // (that means we spawned inside geometry, not standing on it)
-            if not fromInside && normal.Y > MaxSlopeAngleCos then
+            // In Y-down coordinates, "up" is negative Y, so check for normal.Y < -cos(angle)
+            if not fromInside && normal.Y < -MaxSlopeAngleCos then
               wasGrounded <- true
 
             hadCollision <- true
