@@ -150,11 +150,11 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     // Apply jump if grounded (use previous frame's grounded state for responsiveness)
     let velocity =
       if jumpPressed && model.Player.IsGrounded then
-        Vector3(velocity.X, -config.JumpVelocity, 0.0f)  // Negative because Y increases downward
+        Vector3(velocity.X, config.JumpVelocity, 0.0f)  // Positive for upward in Y-up
       else
         velocity
 
-    // Apply gravity (positive Y because Y increases downward like Tiled)
+    // Apply gravity
     let velocity = Physics.applyGravity config velocity dt
 
     // Move with collision
