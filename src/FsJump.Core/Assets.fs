@@ -25,30 +25,44 @@ module Assets =
     worldPos
     entityType
     tileId
+    layerName
+    rotation
     =
     let modelPath = tileIdToFbxPath tileId tileset
+    let bounds = modelPath |> Option.map (getModelBounds ctx)
 
     {
       Id = Guid.NewGuid()
       WorldPosition = worldPos
+      Rotation = rotation
       EntityType = entityType
       ModelPath = modelPath
-      Bounds = None
+      Bounds = bounds
+      LayerName = layerName
     }
 
   let entitiesFromTileLayer ctx layer tileset mapHeightInCells =
     let staticTiles = parseTileLayer layer
+    let worldZ = if layer.Name = "Decorations" then -50.0f else 0.0f
 
     staticTiles
     |> Array.map(fun tile ->
       let worldPos =
-        gridToAnchorPosition tile.GridPos.X tile.GridPos.Y mapHeightInCells
+        gridToAnchorPosition tile.GridPos.X tile.GridPos.Y mapHeightInCells worldZ
+
+      let modelPath = tileIdToFbxPath tile.TileId tileset
+      let rotation = 
+        match modelPath with
+        | Some path when path.Contains("slope") -> -90.0f
+        | _ -> 0.0f
 
       createEntity
         (ctx, tileset, mapHeightInCells)
         worldPos
         (Static tile)
-        tile.TileId)
+        tile.TileId
+        layer.Name
+        rotation)
 
   let entitiesFromObjectGroup
     ctx
@@ -58,10 +72,11 @@ module Assets =
     mapHeightInCells
     =
     let entities = ResizeArray<Entity>()
+    let worldZ = if group.Name = "Decorations" then -50.0f else 0.0f
 
     for obj in group.Objects do
       if obj.Gid > 0 then
-        let worldPos = objectToAnchorPosition obj.X obj.Y mapHeightPixels
+        let worldPos = objectToAnchorPosition obj.X obj.Y mapHeightPixels worldZ
 
         let entityType =
           match obj.Type.ToLowerInvariant() with
@@ -92,6 +107,8 @@ module Assets =
             worldPos
             entityType
             obj.Gid
+            group.Name
+            obj.Rotation
         )
 
     entities.ToArray()
@@ -134,23 +151,32 @@ module Assets =
       |> Array.tryFind(fun o -> o.Type.ToLowerInvariant() = "spawn"))
     |> Option.map(fun obj ->
       let mapHeightPixels = float32(tiledMap.Height * tiledMap.TileHeight)
-      objectToAnchorPosition obj.X obj.Y mapHeightPixels)
+      objectToAnchorPosition obj.X obj.Y mapHeightPixels 0.0f)
 
   /// Convert static tile entities to physics bodies for collision
   let entitiesToPhysicsBodies(entities: Entity[]) =
     entities
     |> Array.choose(fun entity ->
-      match entity.EntityType with
-      | Static _ ->
-        // Create a box collider for static tiles
-        // Use standard tile size (64x64x64) for now
-        // Could use entity.Bounds if available for more precision
-        let size = Vector3(cellSize, cellSize, cellSize)
+      // Skip decorations and triggers for regular collision
+      if entity.LayerName = "Decorations" || entity.LayerName = "Triggers" then
+        None
+      else
+        match entity.EntityType with
+        | Static _ 
+        | MovingPlatform ->
+          // Use model bounds for accurate collision if available, otherwise default to tile size
+          let size, centerOffset =
+            match entity.Bounds with
+            | Some b -> 
+                b.Size, b.Center
+            | None -> 
+                Vector3(cellSize, cellSize, cellSize), Vector3(0.0f, cellSize / 2.0f, 0.0f)
 
-        Some {
-          Position = entity.WorldPosition
-          Velocity = Vector3.Zero
-          Shape = Box size
-          IsStatic = true
-        }
-      | _ -> None)
+          Some {
+            Position = entity.WorldPosition + centerOffset
+            Velocity = Vector3.Zero
+            Shape = Box size
+            IsStatic = true
+            EntityId = Some entity.Id
+          }
+        | _ -> None)

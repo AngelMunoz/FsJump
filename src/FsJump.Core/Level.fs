@@ -276,20 +276,20 @@ module Level =
     (gridX: int)
     (gridY: int)
     (mapHeight: int)
+    (worldZ: float32)
     : Vector3 =
     let worldX = float32(gridX) * cellSize + (cellSize / 2.0f)
     let worldY = float32(mapHeight - 1 - gridY) * cellSize
-    let worldZ = 0.0f
     Vector3(worldX, worldY, worldZ)
 
   let objectToAnchorPosition
     (objX: float32)
     (objY: float32)
     (mapHeightPixels: float32)
+    (worldZ: float32)
     : Vector3 =
     let worldX = objX + (cellSize / 2.0f)
     let worldY = mapHeightPixels - objY
-    let worldZ = 0.0f
     Vector3(worldX, worldY, worldZ)
 
   let parseTileLayer(layer: TileLayer) =

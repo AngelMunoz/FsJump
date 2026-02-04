@@ -115,9 +115,11 @@ type EntityType =
 type Entity = {
   Id: Guid
   WorldPosition: Vector3
+  Rotation: float32
   EntityType: EntityType
   ModelPath: string option
   Bounds: ModelBounds option
+  LayerName: string
 }
 
 // ============================================
@@ -147,6 +149,7 @@ type PhysicsBody = {
   Velocity: Vector3
   Shape: CollisionShape
   IsStatic: bool
+  EntityId: Guid option
 }
 
 type GroundInfo = {
@@ -180,3 +183,4 @@ type Msg =
   | Tick of GameTime
   | LevelLoaded of TiledMap
   | InputMapped of ActionState<PlayerAction>
+  | TriggerActivated of Entity

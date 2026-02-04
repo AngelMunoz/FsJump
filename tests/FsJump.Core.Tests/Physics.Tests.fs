@@ -251,6 +251,7 @@ let tests =
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
+          EntityId = None
         }
 
         let result = Physics.checkGrounded config playerPos [| groundBody |]
@@ -274,6 +275,7 @@ let tests =
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
+          EntityId = None
         }
 
         let result = Physics.checkGrounded config playerPos [| groundBody |]
@@ -294,6 +296,7 @@ let tests =
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
+          EntityId = None
         }
 
         let result = Physics.checkGrounded config playerPos [| groundBody |]
@@ -356,6 +359,7 @@ let tests =
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
+          EntityId = None
         }
 
         let dt = 0.1f // Large enough to cause collision
@@ -396,6 +400,7 @@ let tests =
           Velocity = Vector3.Zero
           Shape = Box(Vector3(64.0f, 64.0f, 64.0f))
           IsStatic = true
+          EntityId = None
         }
 
         let dt = 0.3f // ensures collision happens (deltaY = -60, newY = 40, which is within radius 16 of top at 32)

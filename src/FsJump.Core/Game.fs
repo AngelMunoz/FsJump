@@ -184,9 +184,31 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     // Update camera to follow player
     let cameraTarget = Vector3(newPos.X, newPos.Y, 0.0f)
 
-    struct ({ model with Player = player; CameraTarget = cameraTarget }, Cmd.none)
+    // Check for triggers (overlap with player center)
+    let triggerEntity =
+      model.Entities
+      |> Array.tryFind(fun e ->
+        e.LayerName = "Triggers" && 
+        match e.Bounds with
+        | Some b -> 
+            Physics.intersectsBox newPos (e.WorldPosition + b.Center) b.Size
+        | None -> 
+            // Fallback for triggers without models (use tile size)
+            Physics.intersectsBox newPos e.WorldPosition (Vector3(cellSize, cellSize, cellSize)))
+
+    let cmd =
+      match triggerEntity with
+      | Some e -> Cmd.ofMsg (TriggerActivated e)
+      | None -> Cmd.none
+
+    struct ({ model with Player = player; CameraTarget = cameraTarget }, cmd)
 
   | LevelLoaded _ -> struct (model, Cmd.none)
+
+  | TriggerActivated entity ->
+    // Basic trigger handler - could expand this later (e.g., play sound, change state)
+    printfn $"Trigger Activated: {entity.EntityType} at {entity.WorldPosition}"
+    struct (model, Cmd.none)
 
   | InputMapped _actions ->
     // Input is polled directly in Tick - ignore subscription
@@ -210,37 +232,42 @@ let view
   |> Buffer.camera camera
   |> Buffer.submit
 
-  // Render static entities (exclude Player entities - those are rendered separately)
+  // Render static entities
   for entity in model.Entities do
     match entity.EntityType with
-    | Player -> () // Skip player entities (spawn point marker)
+    | Player -> () 
     | _ ->
-      entity.ModelPath
-      |> Option.iter(fun path ->
+      match entity.ModelPath with
+      | Some path ->
         let modelAsset = Mibo.Elmish.Assets.model path ctx
         let mesh = Mesh.fromModel modelAsset
+        let rot = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(entity.Rotation), 0.0f, 0.0f)
 
         for mesh_ in mesh do
           buffer
-          |> Buffer.draw(
+          |> Buffer.draw (
             draw {
               mesh mesh_
               at entity.WorldPosition
+              rotatedBy rot
             }
           )
-          |> Buffer.submit)
+          |> Buffer.submit
+      | None -> ()
 
   // Render player
-  let playerMesh =
-    Mibo.Elmish.Assets.model "PlatformerKit/character-oobi" ctx
-    |> Mesh.fromModel
+  let playerAsset = Mibo.Elmish.Assets.model "PlatformerKit/character-oobi" ctx
+  let playerMesh = Mesh.fromModel playerAsset
+  let renderPos = model.Player.Position - Vector3(0.0f, Physics.DefaultConfig.PlayerRadius, 0.0f)
+  let playerRot = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(90.0f), 0.0f, 0.0f)
 
   for mesh_ in playerMesh do
     buffer
-    |> Buffer.draw(
+    |> Buffer.draw (
       draw {
         mesh mesh_
-        at model.Player.Position
+        at renderPos
+        rotatedBy playerRot
       }
     )
     |> Buffer.submit

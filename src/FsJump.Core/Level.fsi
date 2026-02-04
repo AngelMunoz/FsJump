@@ -9,9 +9,9 @@ module Level =
   val tileIdToFbxPath: tileId: int -> tileset: Tileset -> string option
 
   val gridToAnchorPosition:
-    gridX: int -> gridY: int -> mapHeight: int -> Vector3
+    gridX: int -> gridY: int -> mapHeight: int -> worldZ: float32 -> Vector3
 
   val objectToAnchorPosition:
-    objX: float32 -> objY: float32 -> mapHeightPixels: float32 -> Vector3
+    objX: float32 -> objY: float32 -> mapHeightPixels: float32 -> worldZ: float32 -> Vector3
 
   val parseTileLayer: layer: TileLayer -> StaticTile[]
