@@ -34,6 +34,7 @@ module Assets =
       EntityType = entityType
       ModelPath = modelPath
       Bounds = None
+      StretchX = 1
     }
 
   let entitiesFromTileLayer ctx layer tileset mapHeightInCells =

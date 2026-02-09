@@ -16,11 +16,13 @@ type ModelMetadata = { Bounds: ModelBounds; Offset: Vector3 }
 [<Struct>]
 type LayoutCell =
   | Terrain of modelPath: string
+  | TerrainStretched of modelPath: string * stretchWidth: int // Anchor cell for stretched platforms
   | Decoration of modelPath: string
   | Hazard of modelPath: string * hazardType: string
   | MovingPlatform of modelPath: string
   | Goal of modelPath: string
   | SpawnPoint
+  | CollisionOnly of modelPath: string // Has collision but doesn't render (for stretched platforms)
   | Empty
 
 /// A Flow is a function that takes a cursor (X, Section) and returns an updated cursor.
@@ -112,7 +114,39 @@ module Platformer =
 
       (x + width, sec)
 
-  /// A platform at a specific height.
+  /// Stretched ground - renders ONE model scaled to cover the entire width (better perf).
+  /// Use for long continuous ground sections.
+  let inline stretchedGround(width: int) : Flow =
+    fun (x, sec) ->
+      // Place a single terrain cell that will be rendered stretched
+      sec
+      |> Layout3D.section
+        x
+        0
+        0
+        (Layout3D.set 0 0 0 (TerrainStretched(Theme.Terrain.grassLarge, width)))
+      |> ignore
+      // Fill collision markers for the rest (no render, collision only)
+      if width > 1 then
+        sec
+        |> Layout3D.section
+          (x + 1)
+          0
+          0
+          (Layout3D.fill
+            0
+            0
+            0
+            (width - 1)
+            1
+            1
+            (CollisionOnly Theme.Terrain.grassLarge))
+        |> ignore
+
+      (x + width, sec)
+
+  /// A platform at a specific height - renders N individual models (one per cell).
+  /// Use for platforms that should appear as discrete tiles (hexagons, stepping stones, etc.)
   let inline platform (width: int) (height: float32) : Flow =
     fun (x, sec) ->
       let y = int(Math.Round(float height))
@@ -129,13 +163,71 @@ module Platformer =
 
       (x + width, sec)
 
-  /// The starting area for the player.
+  /// Alias for platform - explicitly named for clarity
+  let inline discretePlatform (width: int) (height: float32) : Flow =
+    platform width height
+
+  /// A stretched platform - renders ONE model scaled to cover the width.
+  /// Use for long continuous platforms where visual uniformity is desired.
+  let inline stretchedPlatform (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
+      // Place anchor cell for rendering
+      sec
+      |> Layout3D.section
+        x
+        y
+        0
+        (Layout3D.set
+          0
+          0
+          0
+          (TerrainStretched(Theme.Terrain.grassLowNarrow, width)))
+      |> ignore
+      // Fill collision markers for the rest
+      if width > 1 then
+        sec
+        |> Layout3D.section
+          (x + 1)
+          y
+          0
+          (Layout3D.fill
+            0
+            0
+            0
+            (width - 1)
+            1
+            1
+            (CollisionOnly Theme.Terrain.grassLowNarrow))
+        |> ignore
+
+      (x + width, sec)
+
+  /// The starting area for the player (uses stretched optimization).
   let inline spawnArea(width: int) : Flow =
     fun (x, sec) ->
       sec
       |> Layout3D.section x 0 0 (fun s ->
         s
-        |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
+        // Render first cell, CollisionOnly for the rest
+        |> Layout3D.set
+          0
+          0
+          0
+          (TerrainStretched(Theme.Terrain.grassLarge, width))
+        |> (fun s2 ->
+          if width > 1 then
+            s2
+            |> Layout3D.fill
+              1
+              0
+              0
+              (width - 1)
+              1
+              1
+              (CollisionOnly Theme.Terrain.grassLarge)
+          else
+            s2)
         |> Layout3D.set (width / 2) 1 0 SpawnPoint
         |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.arrow))
       |> ignore
@@ -233,14 +325,15 @@ module LevelLayout =
         |> Platformer.gap 1
         |> Platformer.spikePit 4
         |> Platformer.gap 1
-        |> Platformer.platform 2 0.5f // low platform after spikes
+        |> Platformer.discretePlatform 2 0.5f // discrete stepping stones
         |> Platformer.gap 1
-        |> Platformer.platform 2 1.0f // step up ~32 units
+        |> Platformer.discretePlatform 2 1.0f // step up
         |> Platformer.gap 1
-        |> Platformer.platform 2 1.4f // step up ~25 units
+        |> Platformer.discretePlatform 2 1.4f // step up more
         |> Platformer.gap 2
-        |> Platformer.platformWithCoin 2 1.0f // back down for variety
+        |> Platformer.platformWithCoin 2 1.0f
         |> (fun (x, s) ->
+          // Moving platform section
           s
           |> Layout3D.section x 1 0 (fun s2 ->
             s2
@@ -248,12 +341,18 @@ module LevelLayout =
               1
               0
               0
-              (MovingPlatform Theme.Special.movingPlatform)
-            |> Layout3D.set 4 2 0 (Hazard(Theme.Hazards.saw, "rotating")))
+              (MovingPlatform Theme.Special.movingPlatform))
           |> ignore
 
-          (x + 6, s))
-        |> Platformer.gap 2
+          (x + 3, s))
+        |> Platformer.gap 1
+        |> Platformer.stretchedPlatform 4 0.5f // stretched landing platform
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 1 1.0f // single stepping stone
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 1 1.0f // another stepping stone
+        |> Platformer.gap 1
+        |> Platformer.stretchedGround 4 // landing area
         |> Platformer.goalArea 6
 
       finalSec)
@@ -302,6 +401,37 @@ module LevelLayout =
           EntityType = entityType
           ModelPath = Some modelPath
           Bounds = getBoundsFromCache modelPath
+          StretchX = 1
+        }
+      | TerrainStretched(modelPath, stretchWidth) ->
+        // Stretched anchor cell: renders one model scaled to cover stretchWidth cells
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType =
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = stretchWidth // Will be used for X-scale in rendering
+        }
+      | CollisionOnly modelPath ->
+        // Collision-only cell: entity with physics but no rendering
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType =
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+          ModelPath = None // No model = no rendering
+          Bounds = getBoundsFromCache modelPath // But still has bounds for physics
+          StretchX = 1
         }
       | Hazard(modelPath, _) ->
         entities.Add {
@@ -310,6 +440,7 @@ module LevelLayout =
           EntityType = Danger
           ModelPath = Some modelPath
           Bounds = getBoundsFromCache modelPath
+          StretchX = 1
         }
       | MovingPlatform modelPath ->
         entities.Add {
@@ -318,6 +449,7 @@ module LevelLayout =
           EntityType = EntityType.MovingPlatform
           ModelPath = Some modelPath
           Bounds = getBoundsFromCache modelPath
+          StretchX = 1
         }
       | Goal modelPath ->
         entities.Add {
@@ -326,6 +458,7 @@ module LevelLayout =
           EntityType = EntityType.Goal
           ModelPath = Some modelPath
           Bounds = getBoundsFromCache modelPath
+          StretchX = 1
         }
       | SpawnPoint ->
         entities.Add {
@@ -334,6 +467,7 @@ module LevelLayout =
           EntityType = Player
           ModelPath = None
           Bounds = None
+          StretchX = 1
         }
       | Empty -> ())
 

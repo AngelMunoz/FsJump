@@ -229,12 +229,21 @@ let view
         let modelAsset = Mibo.Elmish.Assets.model path ctx
         let mesh = Mesh.fromModel modelAsset
 
+        // Calculate scale and position for stretched entities
+        let scaleX = float32 entity.StretchX
+        let pos = entity.WorldPosition
+        // For stretched models, offset position to center the stretched model over all cells
+        let offsetX = (scaleX - 1.0f) * cellSizeF / 2.0f
+        let adjustedPos = Vector3(pos.X + offsetX, pos.Y, pos.Z)
+        let scaleVec = Vector3(scaleX, 1.0f, 1.0f)
+
         for mesh_ in mesh do
           buffer
           |> Buffer.draw(
             draw {
               mesh mesh_
-              at entity.WorldPosition
+              at adjustedPos
+              scaledByVec scaleVec
             }
           )
           |> Buffer.submit)

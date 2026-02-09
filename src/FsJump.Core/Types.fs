@@ -118,6 +118,7 @@ type Entity = {
   EntityType: EntityType
   ModelPath: string option
   Bounds: ModelBounds option
+  StretchX: int // 1 = normal, >1 = stretched across N cells
 }
 
 // ============================================
