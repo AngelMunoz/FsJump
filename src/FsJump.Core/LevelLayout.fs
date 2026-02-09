@@ -9,8 +9,10 @@ open FsJump.Core.Types
 // Core Domain Types
 // ============================================
 
-/// Represents the content of a single cell in the 3D grid.
-/// This is the "Atomic Unit" of our level.
+/// Full bounds and offset metadata for a model
+type ModelMetadata = { Bounds: ModelBounds; Offset: Vector3 }
+
+/// Content of a single cell in the 3D grid.
 [<Struct>]
 type LayoutCell =
   | Terrain of modelPath: string
@@ -21,22 +23,18 @@ type LayoutCell =
   | SpawnPoint
   | Empty
 
-/// A Stamp is a function that modifies a grid section.
-type Stamp = GridSection3D<LayoutCell> -> GridSection3D<LayoutCell>
+/// A Flow is a function that takes a cursor (X, Section) and returns an updated cursor.
+/// This enables declarative piping: (0, sec) |> ground 4 |> gap 2
+type Flow = int * GridSection3D<LayoutCell> -> int * GridSection3D<LayoutCell>
 
-/// A ScenarioPiece is a higher-level building block.
-/// It knows its width, allowing for automatic sequential layout.
-type ScenarioPiece = {
-  Width: int
-  Stamp: Stamp
-}
+module InternalMetadata =
+  open System.Collections.Generic
+  let metadataCache = Dictionary<string, ModelMetadata>()
 
 // ============================================
 // Asset & Theme Registry
 // ============================================
 
-/// Centralized repository for asset paths.
-/// Makes it easier to reskin the level later.
 module Theme =
   module Terrain =
     let grassLarge = "PlatformerKit/block-grass-large"
@@ -59,102 +57,145 @@ module Theme =
     let tree = "PlatformerKit/tree-pine-small"
 
   module Special =
-    let goal = "PlatformerKit/flowers" // Using flowers as goal for now
+    let goal = "PlatformerKit/flowers"
     let movingPlatform = "PlatformerKit/block-moving-blue"
 
+
+// ============================================
+// Metadata Extraction
+// ============================================
+
+module Metadata =
+  let extractThemeMetadata(ctx: Mibo.Elmish.GameContext) =
+    let extract path =
+      if not(InternalMetadata.metadataCache.ContainsKey path) then
+        let model = Mibo.Elmish.Assets.model path ctx
+        let bounds = ModelBounds.extractFromModel model
+
+        InternalMetadata.metadataCache.Add(
+          path,
+          {
+            Bounds = bounds
+            Offset = ModelBounds.calculateOffset bounds BottomCenter
+          }
+        )
+
+    extract Theme.Terrain.grassLarge
+    extract Theme.Terrain.grassLow
+    extract Theme.Terrain.grassLowNarrow
+    extract Theme.Decor.arrow
+    extract Theme.Decor.flowers
+    extract Theme.Decor.coinGold
+    extract Theme.Hazards.spikes
+    extract Theme.Hazards.saw
+    extract Theme.Special.movingPlatform
+    extract "PlatformerKit/character-oobi"
 
 // ============================================
 // Platformer DSL (Domain Specific Language)
 // ============================================
 
 module Platformer =
-  /// The engine of the DSL.
-  /// Chains multiple scenario pieces together sequentially along the X-axis.
-  let chain (pieces: seq<ScenarioPiece>) : Stamp =
-    fun section ->
-      // Fold through the pieces, tracking the current X offset
-      let finalSection, _ =
-        pieces
-        |> Seq.fold (fun (sec: GridSection3D<LayoutCell>, xOffset: int) piece ->
-            // Apply the stamp at the current offset
-            let nextSec = sec |> Layout3D.section xOffset 0 0 piece.Stamp
-            // Return the modified section and the new offset
-            (nextSec, xOffset + piece.Width)
-        ) (section, 0)
-      
-      finalSection
-
-  // --- Primitive Builders ---
-
   /// A basic gap (empty space).
-  let gap (width: int) : ScenarioPiece = 
-    { Width = width; Stamp = id }
+  let inline gap(width: int) : Flow = fun (x, sec) -> (x + width, sec)
 
   /// Solid ground at y=0.
-  let ground (width: int) : ScenarioPiece =
-    { Width = width
-      Stamp = Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge) }
+  let inline ground(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section
+        x
+        0
+        0
+        (Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge))
+      |> ignore
+
+      (x + width, sec)
 
   /// A platform at a specific height.
-  /// Supports fractional heights for precise jump tuning.
-  let platform (width: int) (height: float32) : ScenarioPiece =
-    let model = if width = 1 then Theme.Terrain.grassLow else Theme.Terrain.grassLowNarrow
-    { Width = width
-      Stamp = fun sec ->
-        // Convert float height to internal Mibo coordinates if necessary
-        // or round to nearest cell if the grid only supports integers.
-        // Mibo Layout3D typically uses integer coordinates for the grid cells.
-        let y = int (Math.Round(float height))
-        sec |> Layout3D.fill 0 y 0 width 1 1 (Terrain model) }
+  let inline platform (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
 
-  // --- Semantic Gameplay Pieces ---
+      let model =
+        if width = 1 then
+          Theme.Terrain.grassLow
+        else
+          Theme.Terrain.grassLowNarrow
+
+      sec
+      |> Layout3D.section x y 0 (Layout3D.fill 0 0 0 width 1 1 (Terrain model))
+      |> ignore
+
+      (x + width, sec)
 
   /// The starting area for the player.
-  let spawnArea (width: int) : ScenarioPiece =
-    { Width = width
-      Stamp = fun sec ->
-        sec
+  let inline spawnArea(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
         |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
         |> Layout3D.set (width / 2) 1 0 SpawnPoint
-        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.arrow) }
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.arrow))
+      |> ignore
+
+      (x + width, sec)
 
   /// A pit full of spikes.
-  let spikePit (width: int) : ScenarioPiece =
-    { Width = width
-      Stamp = fun sec ->
-        sec
+  let inline spikePit(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
         |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
-        |> Layout3D.fill 0 1 0 width 1 1 (Hazard(Theme.Hazards.spikes, "spikes")) }
+        |> Layout3D.fill
+          0
+          1
+          0
+          width
+          1
+          1
+          (Hazard(Theme.Hazards.spikes, "spikes")))
+      |> ignore
+
+      (x + width, sec)
 
   /// A platform with a coin on top.
-  let platformWithCoin (width: int) (height: float32) : ScenarioPiece =
-    { Width = width
-      Stamp = fun sec ->
-        sec
-        |> Layout3D.section 0 0 0 (platform width height).Stamp
-        |> ignore
-        let y = int (Math.Round(float height))
-        sec |> Layout3D.set (width / 2) (y + 1) 1 (Decoration Theme.Decor.coinGold) }
+  let inline platformWithCoin (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
 
-  /// A simple jump challenge: [Ground] -> [Gap] -> [Platform]
-  let jumpChallenge (gapWidth: int) (platWidth: int) (platHeight: float32) : seq<ScenarioPiece> =
-    seq {
-      gap gapWidth
-      platform platWidth platHeight
-    }
-    
+      sec
+      |> Layout3D.section x y 0 (fun s ->
+        s
+        |> (fun s2 ->
+          s2
+          |> Layout3D.fill
+            0
+            0
+            0
+            width
+            1
+            1
+            (Terrain Theme.Terrain.grassLowNarrow))
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.coinGold))
+      |> ignore
+
+      (x + width, sec)
+
   /// The end of the level.
-  let goalArea (width: int) : ScenarioPiece =
-    { Width = width
-      Stamp = fun sec ->
-        sec
+  let inline goalArea(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
         |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
         |> Layout3D.set (width / 2) 1 0 (Goal Theme.Special.goal)
-        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.flowers) }
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.flowers))
+      |> ignore
 
-  /// Rotating saw hazard.
-  let sawRotating (x: int) (y: int) : Stamp =
-      Layout3D.set x y 0 (Hazard(Theme.Hazards.saw, "rotating"))
+      (x + width, sec)
 
 
 // ============================================
@@ -162,53 +203,19 @@ module Platformer =
 // ============================================
 
 module LevelLayout =
-  // Map dimensions
-  let mapWidth = 200 // Increased width to accommodate sequential layout
+  let mapWidth = 200
   let mapHeight = 20
   let mapDepth = 2
 
-  /// Defines the sequence of the prototype level.
-  /// This is the "Script" of the level.
-  let private prototypeSequence =
-    seq {
-        // Intro
-        Platformer.spawnArea 4
-        
-        // Basic Jumping (reachable heights)
-        Platformer.ground 2
-        Platformer.gap 2
-        Platformer.platformWithCoin 3 1.0f
-        
-        // Hazard Introduction
-        Platformer.gap 2
-        Platformer.spikePit 4
-        
-        // Verticality (Step-like progression)
-        Platformer.gap 1
-        Platformer.platform 2 1.0f
-        Platformer.gap 1
-        Platformer.platform 2 2.0f
-        Platformer.gap 1
-        Platformer.platform 2 3.0f
+  /// Calculates world position for a cell's bottom.
+  let inline cellBottom x y z =
+    Vector3(
+      float32 x * cellSize + (cellSize / 2.0f),
+      float32 y * cellSize,
+      float32 z * 0.1f // Tiny epsilon for layering
+    )
 
-        // Tricky Jump
-        Platformer.gap 3
-        Platformer.platformWithCoin 2 2.0f
-        
-        // Moving Platform Section
-        { Width = 6
-          Stamp = fun sec -> 
-            sec
-            |> Layout3D.set 1 1 0 (MovingPlatform Theme.Special.movingPlatform)
-            |> Layout3D.section 0 0 0 (Platformer.sawRotating 4 3)
-        }
-
-        // The End
-        Platformer.gap 2
-        Platformer.goalArea 6
-    }
-
-  /// Creates the 3D grid for the level.
+  /// Creates the 3D grid using a declarative piping DSL.
   let createPrototypeLevel() : CellGrid3D<LayoutCell> =
     CellGrid3D.create
       mapWidth
@@ -216,96 +223,151 @@ module LevelLayout =
       mapDepth
       (Vector3(cellSize, cellSize, cellSize))
       Vector3.Zero
-    |> Layout3D.run (Platformer.chain prototypeSequence)
+    |> Layout3D.run(fun sec ->
+      let finalX, finalSec =
+        (0, sec)
+        |> Platformer.spawnArea 4
+        |> Platformer.ground 2
+        |> Platformer.gap 1
+        |> Platformer.platformWithCoin 3 0.8f // ~51 units, reachable from ground
+        |> Platformer.gap 1
+        |> Platformer.spikePit 4
+        |> Platformer.gap 1
+        |> Platformer.platform 2 0.5f // low platform after spikes
+        |> Platformer.gap 1
+        |> Platformer.platform 2 1.0f // step up ~32 units
+        |> Platformer.gap 1
+        |> Platformer.platform 2 1.4f // step up ~25 units
+        |> Platformer.gap 2
+        |> Platformer.platformWithCoin 2 1.0f // back down for variety
+        |> (fun (x, s) ->
+          s
+          |> Layout3D.section x 1 0 (fun s2 ->
+            s2
+            |> Layout3D.set
+              1
+              0
+              0
+              (MovingPlatform Theme.Special.movingPlatform)
+            |> Layout3D.set 4 2 0 (Hazard(Theme.Hazards.saw, "rotating")))
+          |> ignore
+
+          (x + 6, s))
+        |> Platformer.gap 2
+        |> Platformer.goalArea 6
+
+      finalSec)
 
 
   // ============================================
   // Converters (Grid -> Game Entities)
   // ============================================
 
-  /// Converts the 3D grid to game entities.
+  /// Gets the visual offset for a model to align its bottom-center with target position
+  let inline applyMetadata (modelPath: string) (targetBottom: Vector3) =
+    match InternalMetadata.metadataCache.TryGetValue(modelPath) with
+    | (true, meta) -> targetBottom + meta.Offset
+    | _ -> targetBottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
+
+  /// Gets the model bounds from cache
+  let inline getBoundsFromCache(modelPath: string) : ModelBounds option =
+    match InternalMetadata.metadataCache.TryGetValue(modelPath) with
+    | (true, meta) -> Some meta.Bounds
+    | _ -> None
+
   let gridToEntities(grid: CellGrid3D<LayoutCell>) : Entity[] =
     let entities = ResizeArray<Entity>()
-    
+
     grid
-    |> CellGrid3D.iter (fun x y z cell ->
-      let worldPos = CellGrid3D.getWorldPos x y z grid
+    |> CellGrid3D.iter(fun x y z cell ->
+      let bottom = cellBottom x y z
       let newId() = Guid.NewGuid()
 
       match cell with
-      | Terrain modelPath 
+      | Terrain modelPath
       | Decoration modelPath ->
-          entities.Add {
-            Id = newId()
-            WorldPosition = worldPos
-            EntityType = Static { GridPos = { X = x; Y = y; Anchor = BottomCenter }; TileId = 0; Scale = 1.0f }
-            ModelPath = Some modelPath
-            Bounds = None
-          }
-      | Hazard (modelPath, _) ->
-          entities.Add {
-            Id = newId()
-            WorldPosition = worldPos
-            EntityType = Danger
-            ModelPath = Some modelPath
-            Bounds = None
-          }
+        let entityType =
+          if z > 0 then
+            EntityType.Decoration
+          else
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = entityType
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+        }
+      | Hazard(modelPath, _) ->
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = Danger
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+        }
       | MovingPlatform modelPath ->
-          entities.Add {
-            Id = newId()
-            WorldPosition = worldPos
-            EntityType = EntityType.MovingPlatform
-            ModelPath = Some modelPath
-            Bounds = None
-          }
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = EntityType.MovingPlatform
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+        }
       | Goal modelPath ->
-          entities.Add {
-            Id = newId()
-            WorldPosition = worldPos
-            EntityType = EntityType.Goal
-            ModelPath = Some modelPath
-            Bounds = None
-          }
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = EntityType.Goal
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+        }
       | SpawnPoint ->
-          entities.Add {
-            Id = newId()
-            WorldPosition = worldPos
-            EntityType = Player
-            ModelPath = None
-            Bounds = None
-          }
-      | Empty -> ()
-    )
+        entities.Add {
+          Id = newId()
+          WorldPosition = bottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
+          EntityType = Player
+          ModelPath = None
+          Bounds = None
+        }
+      | Empty -> ())
+
     entities.ToArray()
 
-  /// Extracts the player spawn position from the grid.
   let getSpawnPoint(grid: CellGrid3D<LayoutCell>) : Vector3 option =
     let mutable spawnPos = None
+
     grid
-    |> CellGrid3D.iter (fun x y z cell ->
+    |> CellGrid3D.iter(fun x y z cell ->
       match cell with
-      | SpawnPoint -> 
-          spawnPos <- Some (CellGrid3D.getWorldPos x y z grid)
-      | _ -> ()
-    )
+      | SpawnPoint ->
+        spawnPos <- Some(cellBottom x y z + Vector3(0.0f, 32.0f, 0.0f))
+      | _ -> ())
+
     spawnPos
 
-  /// Generates physics bodies from the grid terrain.
-  let gridToPhysicsBodies(grid: CellGrid3D<LayoutCell>) : PhysicsBody[] =
-    let bodies = ResizeArray<PhysicsBody>()
-    let size = Vector3(cellSize, cellSize, cellSize)
+  /// Derives physics bodies from entities using their WorldPosition and Bounds.
+  /// Entity.WorldPosition is the visual draw position where the model is rendered.
+  /// The model's actual center in world space is WorldPosition + bounds.Center.
+  let entitiesToPhysicsBodies(entities: Entity[]) : PhysicsBody[] =
+    entities
+    |> Array.choose(fun entity ->
+      match entity.EntityType, entity.Bounds with
+      | Static _, Some bounds
+      | EntityType.MovingPlatform, Some bounds ->
+        // The model is drawn at WorldPosition
+        // Its center in world space is WorldPosition + bounds.Center
+        let physicsCenter = entity.WorldPosition + bounds.Center
 
-    grid
-    |> CellGrid3D.iter (fun x y z cell ->
-      match cell with
-      | Terrain _ ->
-          let worldPos = CellGrid3D.getWorldPos x y z grid
-          bodies.Add {
-            Position = worldPos
-            Velocity = Vector3.Zero
-            Shape = Box size
-            IsStatic = true
-          }
-      | _ -> ()
-    )
-    bodies.ToArray()
+        Some {
+          Position = physicsCenter
+          Velocity = Vector3.Zero
+          Shape = Box bounds.Size
+          IsStatic = true // MovingPlatform treated as static for now
+        }
+      | _ -> None)

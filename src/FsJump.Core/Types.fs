@@ -174,9 +174,11 @@ type State = {
   CameraPosition: Vector3
   CameraTarget: Vector3
   Actions: ActionState<PlayerAction>
+  SpawnPoint: Vector3
 }
 
 type Msg =
   | Tick of GameTime
   | LevelLoaded of TiledMap
   | InputMapped of ActionState<PlayerAction>
+  | Respawn

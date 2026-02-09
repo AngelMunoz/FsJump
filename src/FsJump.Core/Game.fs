@@ -17,6 +17,7 @@ open FsJump.Core.LevelLayout
 let cellSizeF = 64.0f
 let cameraZOffset = 400f
 let cameraFOV = MathHelper.PiOver4
+let fallRespawnThreshold = -200.0f // Player falls this far below Y=0 to respawn
 
 // ============================================
 // Input Configuration
@@ -53,10 +54,13 @@ let createCamera2_5D (target: Vector3) (vp: Viewport) : Camera =
 let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
   let vp = ctx.GraphicsDevice.Viewport
 
+  // Extract metadata for all models in the theme
+  Metadata.extractThemeMetadata ctx
+
   // Generate level using Mibo Layout3D
   let grid = LevelLayout.createPrototypeLevel()
   let entities = LevelLayout.gridToEntities grid
-  let staticBodies = LevelLayout.gridToPhysicsBodies grid
+  let staticBodies = LevelLayout.entitiesToPhysicsBodies entities
 
   let spawnPoint =
     match LevelLayout.getSpawnPoint grid with
@@ -83,6 +87,7 @@ let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
     CameraPosition = (createCamera2_5D spawnPoint vp).Position
     CameraTarget = spawnPoint
     Actions = ActionState.empty
+    SpawnPoint = spawnPoint
   }
 
   struct (model, Cmd.none)
@@ -163,18 +168,38 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     // Update camera to follow player
     let cameraTarget = Vector3(newPos.X, newPos.Y, 0.0f)
 
-    struct ({
-              model with
-                  Player = player
-                  CameraTarget = cameraTarget
-            },
-            Cmd.none)
+    // Check if player fell below threshold - trigger respawn
+    if newPos.Y < fallRespawnThreshold then
+      struct (model, Cmd.ofMsg Respawn)
+    else
+      struct ({
+                model with
+                    Player = player
+                    CameraTarget = cameraTarget
+              },
+              Cmd.none)
 
   | LevelLoaded _ -> struct (model, Cmd.none)
 
   | InputMapped _actions ->
     // Input is polled directly in Tick - ignore subscription
     struct (model, Cmd.none)
+
+  | Respawn ->
+    // Reset player to spawn point
+    let respawnedPlayer = {
+      Position = model.SpawnPoint
+      Velocity = Vector3.Zero
+      IsGrounded = false
+      GroundNormal = Vector3.Up
+    }
+
+    struct ({
+              model with
+                  Player = respawnedPlayer
+                  CameraTarget = model.SpawnPoint
+            },
+            Cmd.none)
 
 // ============================================
 // View
@@ -215,16 +240,28 @@ let view
           |> Buffer.submit)
 
   // Render player
-  let playerMesh =
-    Mibo.Elmish.Assets.model "PlatformerKit/character-oobi" ctx
-    |> Mesh.fromModel
+  let playerPath = "PlatformerKit/character-oobi"
+  let playerModel = Mibo.Elmish.Assets.model playerPath ctx
+  let playerMesh = Mesh.fromModel playerModel
+
+  // Apply visual offset for player
+  let playerVisualPos =
+    match InternalMetadata.metadataCache.TryGetValue playerPath with
+    | true, meta ->
+      // model.Player.Position is the center of the physics capsule (which is 64 units high)
+      // Its bottom is at Position.Y - 32.
+      // We want the model's bottom to be at that same Y.
+      // WorldPos = TargetBottom + meta.Offset
+      let targetBottom = model.Player.Position - Vector3(0.0f, 32.0f, 0.0f)
+      targetBottom + meta.Offset
+    | _ -> model.Player.Position
 
   for mesh_ in playerMesh do
     buffer
     |> Buffer.draw(
       draw {
         mesh mesh_
-        at model.Player.Position
+        at playerVisualPos
       }
     )
     |> Buffer.submit
