@@ -1,7 +1,6 @@
 module FsJump.Core.Game
 
 open System
-open System.IO
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
@@ -13,6 +12,7 @@ open FsJump.Core.Types
 open FsJump.Core.Level
 open FsJump.Core.Assets
 open FsJump.Core.Physics
+open FsJump.Core.LevelLayout
 
 let cellSizeF = 64.0f
 let cameraZOffset = 400f
@@ -53,73 +53,39 @@ let createCamera2_5D (target: Vector3) (vp: Viewport) : Camera =
 let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
   let vp = ctx.GraphicsDevice.Viewport
 
-  let contentPath =
-    Path.Combine(
-      AppContext.BaseDirectory,
-      ctx.Game.Content.RootDirectory,
-      "Prototype.tmj"
-    )
+  // Generate level using Mibo Layout3D
+  let grid = LevelLayout.createPrototypeLevel()
+  let entities = LevelLayout.gridToEntities grid
+  let staticBodies = LevelLayout.gridToPhysicsBodies grid
 
-  match loadTiledMap contentPath with
-  | Ok tiledMap ->
-    let entities = loadAllLevelEntities ctx tiledMap
-    let levelWidth = float32 tiledMap.Width * cellSizeF
-    let levelHeight = float32 tiledMap.Height * cellSizeF
+  let spawnPoint =
+    match LevelLayout.getSpawnPoint grid with
+    | Some pos -> pos
+    | None -> Vector3(64.0f, 640.0f, 0.0f) // Default spawn
 
-    let spawnPoint =
-      match findSpawnPoint ctx tiledMap with
-      | Some pos -> pos
-      | None -> Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
-
-    let staticBodies = entitiesToPhysicsBodies entities
-
-    let model = {
-      Entities = entities
-      Player = {
-        Position = spawnPoint
-        Velocity = Vector3.Zero
-        IsGrounded = false
-        GroundNormal = Vector3.Up
-      }
-      StaticBodies = staticBodies
-      Tileset =
-        if tiledMap.Tilesets.Length > 0 then
-          tiledMap.Tilesets.[0]
-        else
-          failwith "No tilesets found"
-      CameraPosition = (createCamera2_5D spawnPoint vp).Position
-      CameraTarget = spawnPoint
-      Actions = ActionState.empty
+  let model = {
+    Entities = entities
+    Player = {
+      Position = spawnPoint
+      Velocity = Vector3.Zero
+      IsGrounded = false
+      GroundNormal = Vector3.Up
     }
-
-    struct (model, Cmd.none)
-
-  | Error err ->
-    printfn $"Error loading level: {err}"
-
-    let emptyModel = {
-      Entities = [||]
-      Player = {
-        Position = Vector3.Zero
-        Velocity = Vector3.Zero
-        IsGrounded = false
-        GroundNormal = Vector3.Up
-      }
-      StaticBodies = [||]
-      Tileset = {
-        FirstGid = 1
-        Name = "Empty"
-        TileCount = 0
-        TileHeight = 64
-        TileWidth = 64
-        Tiles = [||]
-      }
-      CameraPosition = Vector3(0.0f, 0.0f, cameraZOffset)
-      CameraTarget = Vector3(0.0f, 0.0f, 0.0f)
-      Actions = ActionState.empty
+    StaticBodies = staticBodies
+    Tileset = {
+      FirstGid = 1
+      Name = "Layout3D"
+      TileCount = 115
+      TileHeight = 64
+      TileWidth = 64
+      Tiles = [||]
     }
+    CameraPosition = (createCamera2_5D spawnPoint vp).Position
+    CameraTarget = spawnPoint
+    Actions = ActionState.empty
+  }
 
-    struct (emptyModel, Cmd.none)
+  struct (model, Cmd.none)
 
 // ============================================
 // Update
@@ -133,13 +99,26 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
 
     // Poll input directly from keyboard (standard MonoGame API)
     let keyboard = Keyboard.GetState()
-    
+
     let horizontalInput =
-      let left = if keyboard.IsKeyDown(Keys.Left) || keyboard.IsKeyDown(Keys.A) then -1.0f else 0.0f
-      let right = if keyboard.IsKeyDown(Keys.Right) || keyboard.IsKeyDown(Keys.D) then 1.0f else 0.0f
+      let left =
+        if keyboard.IsKeyDown(Keys.Left) || keyboard.IsKeyDown(Keys.A) then
+          -1.0f
+        else
+          0.0f
+
+      let right =
+        if keyboard.IsKeyDown(Keys.Right) || keyboard.IsKeyDown(Keys.D) then
+          1.0f
+        else
+          0.0f
+
       left + right
 
-    let jumpPressed = keyboard.IsKeyDown(Keys.Up) || keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Space)
+    let jumpPressed =
+      keyboard.IsKeyDown(Keys.Up)
+      || keyboard.IsKeyDown(Keys.W)
+      || keyboard.IsKeyDown(Keys.Space)
 
     // Start with current velocity
     let velocity = model.Player.Velocity
@@ -150,41 +129,46 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     // Apply jump if grounded (use previous frame's grounded state for responsiveness)
     let velocity =
       if jumpPressed && model.Player.IsGrounded then
-        Vector3(velocity.X, -config.JumpVelocity, 0.0f)  // Negative because Y increases downward
+        Vector3(velocity.X, config.JumpVelocity, 0.0f) // Positive because Y increases upward
       else
         velocity
 
-    // Apply gravity (positive Y because Y increases downward like Tiled)
+    // Apply gravity (negative Y because Y increases upward)
     let velocity = Physics.applyGravity config velocity dt
 
     // Move with collision
     let playerState = {
       model.Player with
-        Velocity = velocity
+          Velocity = velocity
     }
 
     let struct (newPos, newVel, wasGrounded) =
       Physics.moveAndSlide config playerState model.StaticBodies dt
 
     // Check grounded at the NEW position after movement
-    let groundInfo =
-      Physics.checkGrounded config newPos model.StaticBodies
+    let groundInfo = Physics.checkGrounded config newPos model.StaticBodies
 
     let player = {
       Position = newPos
       Velocity = newVel
-      IsGrounded = wasGrounded || groundInfo.IsGrounded  // Either collision-based or raycast-based
+      IsGrounded = wasGrounded || groundInfo.IsGrounded // Either collision-based or raycast-based
       GroundNormal = groundInfo.GroundNormal
     }
 
     // Debug output (when moving/jumping)
     if horizontalInput <> 0.0f || jumpPressed || Math.Abs(newVel.Y) > 10.0f then
-      printfn $"h={horizontalInput}, jump={jumpPressed}, grounded={model.Player.IsGrounded}, Pos=({newPos.X:F0},{newPos.Y:F0}), Vel=({newVel.X:F0},{newVel.Y:F0})"
+      printfn
+        $"h={horizontalInput}, jump={jumpPressed}, grounded={model.Player.IsGrounded}, Pos=({newPos.X:F0},{newPos.Y:F0}), Vel=({newVel.X:F0},{newVel.Y:F0})"
 
     // Update camera to follow player
     let cameraTarget = Vector3(newPos.X, newPos.Y, 0.0f)
 
-    struct ({ model with Player = player; CameraTarget = cameraTarget }, Cmd.none)
+    struct ({
+              model with
+                  Player = player
+                  CameraTarget = cameraTarget
+            },
+            Cmd.none)
 
   | LevelLoaded _ -> struct (model, Cmd.none)
 

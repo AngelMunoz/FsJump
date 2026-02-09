@@ -28,12 +28,12 @@ module Physics =
   [<Literal>]
   let MaxSlopeAngleCos = 0.707f // cos(45°)
 
-  // In Y-down coordinates, "up" is negative Y
-  let Up = Vector3(0.0f, -1.0f, 0.0f)
-  let Down = Vector3(0.0f, 1.0f, 0.0f)
+  // In Y-up coordinates, "up" is positive Y
+  let Up = Vector3(0.0f, 1.0f, 0.0f)
+  let Down = Vector3(0.0f, -1.0f, 0.0f)
 
   let DefaultConfig = {
-    Gravity = Vector3(0.0f, 900.0f, 0.0f)  // Positive Y because Y increases downward (Tiled style)
+    Gravity = Vector3(0.0f, -900.0f, 0.0f) // Negative Y because Y increases upward
     MoveSpeed = 200.0f
     JumpVelocity = 400.0f
     MinJumpVelocity = 200.0f
@@ -48,10 +48,10 @@ module Physics =
   // Internal Helpers
   // ============================================
 
-  // In our coordinate system, Y increases downward (like Tiled)
-  // So "bottom" means higher Y value
+  // In our coordinate system, Y increases upward
+  // So "bottom" means lower Y value
   let getCapsuleBottom (position: Vector3) (height: float32) =
-    position + Vector3(0.0f, height / 2.0f, 0.0f)
+    position - Vector3(0.0f, height / 2.0f, 0.0f)
 
   let raycastPlane (rayOrigin: Vector3) (rayDir: Vector3) (planeY: float32) =
     if Math.Abs(rayDir.Y) < Epsilon then
@@ -88,8 +88,8 @@ module Physics =
     if dot < 0.0f then velocity - (dot * normal) else velocity
 
   let isWalkableSlope (maxAngleCos: float32) (normal: Vector3) =
-    // In Y-down coordinates, walkable surfaces have normals pointing up (negative Y)
-    normal.Y <= -maxAngleCos
+    // In Y-up coordinates, walkable surfaces have normals pointing up (positive Y)
+    normal.Y >= maxAngleCos
 
   // ============================================
   // Public API
@@ -123,13 +123,13 @@ module Physics =
     (jumpRequested: bool)
     =
     // Use strict comparison - only jump if strictly walkable (not on steep slopes)
-    // In Y-down coordinates, walkable surfaces have normals pointing up (negative Y)
+    // In Y-up coordinates, walkable surfaces have normals pointing up (positive Y)
     if
       jumpRequested
       && player.IsGrounded
-      && player.GroundNormal.Y < -MaxSlopeAngleCos
+      && player.GroundNormal.Y > MaxSlopeAngleCos
     then
-      Vector3(player.Velocity.X, -config.JumpVelocity, 0.0f) // Negative for upward in Y-down
+      Vector3(player.Velocity.X, config.JumpVelocity, 0.0f) // Positive for upward in Y-up
     else
       player.Velocity
 
@@ -138,10 +138,10 @@ module Physics =
     (jumpReleased: bool)
     (minJumpVelocity: float32)
     =
-    // In Y-down coordinates, upward velocity is negative
-    // Cut if moving up faster than min (velocity.Y < -minJumpVelocity)
-    if jumpReleased && velocity.Y < -minJumpVelocity then
-      Vector3(velocity.X, -minJumpVelocity, 0.0f)
+    // In Y-up coordinates, upward velocity is positive
+    // Cut if moving up faster than min (velocity.Y > minJumpVelocity)
+    if jumpReleased && velocity.Y > minJumpVelocity then
+      Vector3(velocity.X, minJumpVelocity, 0.0f)
     else
       velocity
 
@@ -150,13 +150,13 @@ module Physics =
     (playerPos: Vector3)
     (staticBodies: PhysicsBody[])
     =
-    // In Y-down coordinates, the "bottom" of the capsule is at higher Y
-    // Ray starts near the bottom of the player and casts downward (positive Y)
+    // In Y-up coordinates, the "bottom" of the capsule is at lower Y
+    // Ray starts near the bottom of the player and casts downward (negative Y)
     let rayOrigin =
       playerPos
-      + Vector3(0.0f, config.PlayerHeight / 2.0f - config.PlayerRadius, 0.0f)
+      - Vector3(0.0f, config.PlayerHeight / 2.0f - config.PlayerRadius, 0.0f)
 
-    let rayDir = Vector3(0.0f, 1.0f, 0.0f) // Downward in Y-down coordinate system
+    let rayDir = Vector3(0.0f, -1.0f, 0.0f) // Downward in Y-up coordinate system
     let checkDist = config.PlayerRadius + config.GroundCheckDistance
 
 
@@ -169,8 +169,8 @@ module Physics =
     for body in staticBodies do
       match body.Shape with
       | Box size ->
-        // In Y-down coordinates, "top" surface is at minimum Y (facing upward)
-        let boxTop = body.Position.Y - size.Y / 2.0f
+        // In Y-up coordinates, "top" surface is at maximum Y (facing upward)
+        let boxTop = body.Position.Y + size.Y / 2.0f
 
         match raycastPlane rayOrigin rayDir boxTop with
         | Some(hitPoint, t) when t <= checkDist ->
@@ -179,12 +179,12 @@ module Physics =
               closestHit <- t
               groundY <- boxTop
 
-              // In Y-down, the normal pointing UP is (0, -1, 0)
-              // The hit is on the top surface, so the normal should point up (negative Y)
+              // In Y-up, the normal pointing UP is (0, 1, 0)
+              // The hit is on the top surface, so the normal should point up (positive Y)
               let normal =
-                // If hit is on the top surface (min Y of box), normal points up (negative Y)
+                // If hit is on the top surface (max Y of box), normal points up (positive Y)
                 if Math.Abs(hitPoint.Y - boxTop) < Epsilon then
-                  Vector3(0.0f, -1.0f, 0.0f) // Up in Y-down coordinates
+                  Vector3(0.0f, 1.0f, 0.0f) // Up in Y-up coordinates
                 else
                   // For other surfaces, estimate from geometry
                   let closest = closestPointOnBox hitPoint body.Position size
@@ -201,8 +201,8 @@ module Physics =
       | _ -> ()
 
     let slopeAngle =
-      // Angle from UP direction. In Y-down, UP is (0,-1,0), so we use -normal.Y
-      let angleRad = Math.Acos(float(Math.Clamp(-groundNormal.Y, -1.0f, 1.0f)))
+      // Angle from UP direction. In Y-up, UP is (0,1,0), so we use normal.Y
+      let angleRad = Math.Acos(float(Math.Clamp(groundNormal.Y, -1.0f, 1.0f)))
       float32(angleRad * 180.0 / Math.PI)
 
     {
@@ -277,8 +277,8 @@ module Physics =
 
             // Check if this is ground contact - but NOT if we were inside the box
             // (that means we spawned inside geometry, not standing on it)
-            // In Y-down coordinates, "up" is negative Y, so check for normal.Y < -cos(angle)
-            if not fromInside && normal.Y < -MaxSlopeAngleCos then
+            // In Y-up coordinates, "up" is positive Y, so check for normal.Y > cos(angle)
+            if not fromInside && normal.Y > MaxSlopeAngleCos then
               wasGrounded <- true
 
             hadCollision <- true
@@ -288,7 +288,7 @@ module Physics =
 
   let analyzeSurface(bounds: ModelBounds) =
     // Analyze the top surface of the mesh bounds
-    // A flat surface has normal = Up (0, 1, 0)
+    // A flat surface has normal = Up (0, 1, 0) in Y-up coordinate system
     // We estimate from bounds - if Y is significantly different from X/Z extent
     let yExtent = bounds.HalfSize.Y
     let xzExtent = (bounds.HalfSize.X + bounds.HalfSize.Z) / 2.0f
