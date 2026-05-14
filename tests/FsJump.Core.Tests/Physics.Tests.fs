@@ -140,7 +140,7 @@ let tests =
           Position = Vector3.Zero
           Velocity = Vector3.Zero
           IsGrounded = true
-          GroundNormal = Physics.Up // In Y-up, Up = (0, 1, 0)
+          GroundNormal = Physics.Up
         }
 
         let result = Physics.tryJump config player true

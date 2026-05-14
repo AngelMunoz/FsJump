@@ -377,9 +377,25 @@ module LevelLayout =
   let gridToEntities(grid: CellGrid3D<LayoutCell>) : Entity[] =
     let entities = ResizeArray<Entity>()
 
+    // Terrain models don't fill a full cell height (cellSize = 64).
+    // Objects at y>0 that sit on terrain need their Y offset down
+    // so their bottom aligns with the terrain's visual top.
+    let terrainHeightOffset =
+      match InternalMetadata.metadataCache.TryGetValue(Theme.Terrain.grassLarge) with
+      | true, meta -> meta.Bounds.Size.Y - cellSize // negative: terrain is shorter than cell
+      | _ -> 0.0f
+
+    let sitBottom x y z =
+      let b = cellBottom x y z
+      if y > 0 then Vector3(b.X, b.Y + terrainHeightOffset, b.Z) else b
+
     grid
     |> CellGrid3D.iter(fun x y z cell ->
-      let bottom = cellBottom x y z
+      let bottom =
+        match cell with
+        | MovingPlatform _ | SpawnPoint -> cellBottom x y z // floating, no offset
+        | _ -> sitBottom x y z // sit on terrain below
+
       let newId() = Guid.NewGuid()
 
       match cell with
@@ -433,7 +449,7 @@ module LevelLayout =
           Bounds = getBoundsFromCache modelPath // But still has bounds for physics
           StretchX = 1
         }
-      | Hazard(modelPath, _) ->
+      | Hazard(modelPath, _hazardType) ->
         entities.Add {
           Id = newId()
           WorldPosition = applyMetadata modelPath bottom
