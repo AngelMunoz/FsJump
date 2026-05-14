@@ -34,11 +34,10 @@ module Assets =
     {
       Id = Guid.NewGuid()
       WorldPosition = worldPos
-      Rotation = rotation
       EntityType = entityType
       ModelPath = modelPath
-      Bounds = bounds
-      LayerName = layerName
+      Bounds = None
+      StretchX = 1
     }
 
   let entitiesFromTileLayer ctx layer tileset mapHeightInCells =
@@ -152,31 +151,3 @@ module Assets =
     |> Option.map(fun obj ->
       let mapHeightPixels = float32(tiledMap.Height * tiledMap.TileHeight)
       objectToAnchorPosition obj.X obj.Y mapHeightPixels 0.0f)
-
-  /// Convert static tile entities to physics bodies for collision
-  let entitiesToPhysicsBodies(entities: Entity[]) =
-    entities
-    |> Array.choose(fun entity ->
-      // Skip decorations and triggers for regular collision
-      if entity.LayerName = "Decorations" || entity.LayerName = "Triggers" then
-        None
-      else
-        match entity.EntityType with
-        | Static _ 
-        | MovingPlatform ->
-          // Use model bounds for accurate collision if available, otherwise default to tile size
-          let size, centerOffset =
-            match entity.Bounds with
-            | Some b -> 
-                b.Size, b.Center
-            | None -> 
-                Vector3(cellSize, cellSize, cellSize), Vector3(0.0f, cellSize / 2.0f, 0.0f)
-
-          Some {
-            Position = entity.WorldPosition + centerOffset
-            Velocity = Vector3.Zero
-            Shape = Box size
-            IsStatic = true
-            EntityId = Some entity.Id
-          }
-        | _ -> None)

@@ -33,7 +33,7 @@ module Physics =
   let Down = Vector3(0.0f, -1.0f, 0.0f)
 
   let DefaultConfig = {
-    Gravity = Vector3(0.0f, -900.0f, 0.0f)  // Negative Y because gravity pulls down in Y-up
+    Gravity = Vector3(0.0f, -900.0f, 0.0f) // Negative Y because Y increases upward
     MoveSpeed = 200.0f
     JumpVelocity = 400.0f
     MinJumpVelocity = 200.0f
@@ -48,7 +48,8 @@ module Physics =
   // Internal Helpers
   // ============================================
 
-  // In Y-up, "bottom" means lower Y value
+  // In our coordinate system, Y increases upward
+  // So "bottom" means lower Y value
   let getCapsuleBottom (position: Vector3) (height: float32) =
     position - Vector3(0.0f, height / 2.0f, 0.0f)
 
@@ -224,6 +225,7 @@ module Physics =
     // This allows the player to fall off ledges
     let mutable wasGrounded = false
     let radius = config.PlayerRadius
+    let halfHeight = config.PlayerHeight / 2.0f
 
     // Check collisions and slide - use iterative approach for better response
     let maxIterations = 3
@@ -237,55 +239,104 @@ module Physics =
       for body in staticBodies do
         match body.Shape with
         | Box size ->
-          // Treat capsule as sphere for broad collision check
-          let closest = closestPointOnBox newPos body.Position size
-          let diff = newPos - closest
-          let distSq = diff.LengthSquared()
+          let halfSize = size / 2.0f
+          let boxMin = body.Position - halfSize
+          let boxMax = body.Position + halfSize
 
-          // Collision when inside or touching the box
-          if distSq < radius * radius then
-            let dist = Math.Sqrt(float distSq) |> float32
+          // For a capsule, we check collision at multiple points:
+          // 1. Feet sphere (bottom of capsule) - most important for ground
+          // 2. Center sphere
+          // Player feet position is center - (halfHeight - radius)
+          let feetPos = newPos - Vector3(0f, halfHeight - radius, 0f)
 
-            // Handle case when center is inside box (dist ~ 0)
-            let normal, penetration, fromInside =
-              if dist < Epsilon then
-                // Inside box - determine push direction based on velocity or default to up
-                let pushDir =
-                  if newVel.LengthSquared() > Epsilon then
-                    let velNorm = Vector3.Normalize(newVel)
-                    // If velocity is mostly horizontal, push opposite to it
-                    // If mostly vertical, push up (positive Y in Y-up)
-                    if Math.Abs(velNorm.X) > Math.Abs(velNorm.Y) then
-                      -velNorm
-                    else
-                      Up
-                  else
-                    Up
+          // Check feet collision with box top (ground detection)
+          // If feet sphere overlaps box, push up
+          let closestToFeet = closestPointOnBox feetPos body.Position size
+          let feetDiff = feetPos - closestToFeet
+          let feetDistSq = feetDiff.LengthSquared()
 
-                pushDir, radius, true
+          if feetDistSq < radius * radius then
+            let feetDist = Math.Sqrt(float feetDistSq) |> float32
+
+            let normal, penetration =
+              if feetDist < Epsilon then
+                // Feet inside box - push up
+                Up, radius
               else
-                let n = diff / dist
-                n, radius - dist, false
+                let n = feetDiff / feetDist
+                n, radius - feetDist
 
-            // Push out of collision
-            newPos <- newPos + normal * penetration
+            // Only apply if pushing upward (ground contact)
+            if normal.Y > 0.0f then
+              newPos <- newPos + normal * penetration
+              newVel <- slideVelocity newVel normal
 
-            // Slide velocity along surface
-            newVel <- slideVelocity newVel normal
+              if normal.Y > MaxSlopeAngleCos then
+                wasGrounded <- true
 
-            // Check if this is ground contact - but NOT if we were inside the box
-            // In Y-up coordinates, "up" is positive Y, so check for normal.Y > cos(angle)
-            if not fromInside && normal.Y > MaxSlopeAngleCos then
-              wasGrounded <- true
+              hadCollision <- true
 
-            hadCollision <- true
+          // Also check center for horizontal collisions (walls)
+          let closestToCenter = closestPointOnBox newPos body.Position size
+          let centerDiff = newPos - closestToCenter
+          let centerDistSq = centerDiff.LengthSquared()
+
+          // Handle when center is inside the box (centerDistSq very small)
+          if centerDistSq <= Epsilon then
+            // Center is inside box - push opposite to velocity direction
+            let halfSize = size / 2.0f
+            let boxMin = body.Position - halfSize
+            let boxMax = body.Position + halfSize
+
+            // Calculate penetration depth on each axis
+            let dx1 = newPos.X - boxMin.X
+            let dx2 = boxMax.X - newPos.X
+            let dz1 = newPos.Z - boxMin.Z
+            let dz2 = boxMax.Z - newPos.Z
+
+            if
+              Math.Abs(newVel.X) >= Math.Abs(newVel.Z)
+              && Math.Abs(newVel.X) > Epsilon
+            then
+              if newVel.X > 0.0f then
+                let pen = dx1 + radius
+                newPos <- newPos - Vector3(pen, 0f, 0f)
+                newVel <- slideVelocity newVel (Vector3(-1f, 0f, 0f))
+              else
+                let pen = dx2 + radius
+                newPos <- newPos + Vector3(pen, 0f, 0f)
+                newVel <- slideVelocity newVel (Vector3(1f, 0f, 0f))
+
+              hadCollision <- true
+            elif Math.Abs(newVel.Z) > Epsilon then
+              if newVel.Z > 0.0f then
+                let pen = dz1 + radius
+                newPos <- newPos - Vector3(0f, 0f, pen)
+                newVel <- slideVelocity newVel (Vector3(0f, 0f, -1f))
+              else
+                let pen = dz2 + radius
+                newPos <- newPos + Vector3(0f, 0f, pen)
+                newVel <- slideVelocity newVel (Vector3(0f, 0f, 1f))
+
+              hadCollision <- true
+
+          elif centerDistSq < radius * radius then
+            let centerDist = Math.Sqrt(float centerDistSq) |> float32
+            let normal = centerDiff / centerDist
+            let penetration = radius - centerDist
+
+            if Math.Abs(normal.Y) < 0.5f then
+              newPos <- newPos + normal * penetration
+              newVel <- slideVelocity newVel normal
+              hadCollision <- true
+
         | _ -> ()
 
     struct (newPos, newVel, wasGrounded)
 
   let analyzeSurface(bounds: ModelBounds) =
     // Analyze the top surface of the mesh bounds
-    // A flat surface has normal = Up (0, 1, 0)
+    // A flat surface has normal = Up (0, 1, 0) in Y-up coordinate system
     // We estimate from bounds - if Y is significantly different from X/Z extent
     let yExtent = bounds.HalfSize.Y
     let xzExtent = (bounds.HalfSize.X + bounds.HalfSize.Z) / 2.0f

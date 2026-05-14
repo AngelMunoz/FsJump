@@ -115,11 +115,10 @@ type EntityType =
 type Entity = {
   Id: Guid
   WorldPosition: Vector3
-  Rotation: float32
   EntityType: EntityType
   ModelPath: string option
   Bounds: ModelBounds option
-  LayerName: string
+  StretchX: int // 1 = normal, >1 = stretched across N cells
 }
 
 // ============================================
@@ -149,7 +148,6 @@ type PhysicsBody = {
   Velocity: Vector3
   Shape: CollisionShape
   IsStatic: bool
-  EntityId: Guid option
 }
 
 type GroundInfo = {
@@ -177,10 +175,11 @@ type State = {
   CameraPosition: Vector3
   CameraTarget: Vector3
   Actions: ActionState<PlayerAction>
+  SpawnPoint: Vector3
 }
 
 type Msg =
   | Tick of GameTime
   | LevelLoaded of TiledMap
   | InputMapped of ActionState<PlayerAction>
-  | TriggerActivated of Entity
+  | Respawn

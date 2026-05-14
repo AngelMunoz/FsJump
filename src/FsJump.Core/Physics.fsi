@@ -18,13 +18,10 @@ type PhysicsConfig = {
 
 module Physics =
   val DefaultConfig: PhysicsConfig
-  
-  // Direction constants for Y-up coordinate system
-  val Up: Vector3    // (0, 1, 0) - upward in Y-up coordinates
-  val Down: Vector3  // (0, -1, 0) - downward in Y-up coordinates
 
-  // Intersection helpers
-  val intersectsBox: point: Vector3 -> boxPos: Vector3 -> boxSize: Vector3 -> bool
+  // Direction constants for Y-up coordinate system
+  val Up: Vector3 // (0, 1, 0) - upward in Y-up coordinates
+  val Down: Vector3 // (0, -1, 0) - downward in Y-up coordinates
 
   // Movement & forces
   val applyGravity:

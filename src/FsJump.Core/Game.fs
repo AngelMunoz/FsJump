@@ -1,7 +1,6 @@
 module FsJump.Core.Game
 
 open System
-open System.IO
 open Microsoft.Xna.Framework
 open Microsoft.Xna.Framework.Graphics
 open Microsoft.Xna.Framework.Input
@@ -13,10 +12,12 @@ open FsJump.Core.Types
 open FsJump.Core.Level
 open FsJump.Core.Assets
 open FsJump.Core.Physics
+open FsJump.Core.LevelLayout
 
 let cellSizeF = 64.0f
 let cameraZOffset = 400f
 let cameraFOV = MathHelper.PiOver4
+let fallRespawnThreshold = -200.0f // Player falls this far below Y=0 to respawn
 
 // ============================================
 // Input Configuration
@@ -53,73 +54,43 @@ let createCamera2_5D (target: Vector3) (vp: Viewport) : Camera =
 let init(ctx: GameContext) : struct (State * Cmd<Msg>) =
   let vp = ctx.GraphicsDevice.Viewport
 
-  let contentPath =
-    Path.Combine(
-      AppContext.BaseDirectory,
-      ctx.Game.Content.RootDirectory,
-      "Prototype.tmj"
-    )
+  // Extract metadata for all models in the theme
+  Metadata.extractThemeMetadata ctx
 
-  match loadTiledMap contentPath with
-  | Ok tiledMap ->
-    let entities = loadAllLevelEntities ctx tiledMap
-    let levelWidth = float32 tiledMap.Width * cellSizeF
-    let levelHeight = float32 tiledMap.Height * cellSizeF
+  // Generate level using Mibo Layout3D
+  let grid = LevelLayout.createPrototypeLevel()
+  let entities = LevelLayout.gridToEntities grid
+  let staticBodies = LevelLayout.entitiesToPhysicsBodies entities
 
-    let spawnPoint =
-      match findSpawnPoint ctx tiledMap with
-      | Some pos -> pos
-      | None -> Vector3(levelWidth / 2.0f, levelHeight / 2.0f, 0.0f)
+  let spawnPoint =
+    match LevelLayout.getSpawnPoint grid with
+    | Some pos -> pos
+    | None -> Vector3(64.0f, 640.0f, 0.0f) // Default spawn
 
-    let staticBodies = entitiesToPhysicsBodies entities
-
-    let model = {
-      Entities = entities
-      Player = {
-        Position = spawnPoint
-        Velocity = Vector3.Zero
-        IsGrounded = false
-        GroundNormal = Vector3.Up
-      }
-      StaticBodies = staticBodies
-      Tileset =
-        if tiledMap.Tilesets.Length > 0 then
-          tiledMap.Tilesets.[0]
-        else
-          failwith "No tilesets found"
-      CameraPosition = (createCamera2_5D spawnPoint vp).Position
-      CameraTarget = spawnPoint
-      Actions = ActionState.empty
+  let model = {
+    Entities = entities
+    Player = {
+      Position = spawnPoint
+      Velocity = Vector3.Zero
+      IsGrounded = false
+      GroundNormal = Vector3.Up
     }
-
-    struct (model, Cmd.none)
-
-  | Error err ->
-    printfn $"Error loading level: {err}"
-
-    let emptyModel = {
-      Entities = [||]
-      Player = {
-        Position = Vector3.Zero
-        Velocity = Vector3.Zero
-        IsGrounded = false
-        GroundNormal = Vector3.Up
-      }
-      StaticBodies = [||]
-      Tileset = {
-        FirstGid = 1
-        Name = "Empty"
-        TileCount = 0
-        TileHeight = 64
-        TileWidth = 64
-        Tiles = [||]
-      }
-      CameraPosition = Vector3(0.0f, 0.0f, cameraZOffset)
-      CameraTarget = Vector3(0.0f, 0.0f, 0.0f)
-      Actions = ActionState.empty
+    StaticBodies = staticBodies
+    Tileset = {
+      FirstGid = 1
+      Name = "Layout3D"
+      TileCount = 115
+      TileHeight = 64
+      TileWidth = 64
+      Tiles = [||]
     }
+    CameraPosition = (createCamera2_5D spawnPoint vp).Position
+    CameraTarget = spawnPoint
+    Actions = ActionState.empty
+    SpawnPoint = spawnPoint
+  }
 
-    struct (emptyModel, Cmd.none)
+  struct (model, Cmd.none)
 
 // ============================================
 // Update
@@ -131,88 +102,74 @@ let update (msg: Msg) (model: State) : struct (State * Cmd<Msg>) =
     let dt = float32 gt.ElapsedGameTime.TotalSeconds
     let config = Physics.DefaultConfig
 
-    // Poll input directly from keyboard (standard MonoGame API)
     let keyboard = Keyboard.GetState()
-    
+
     let horizontalInput =
-      let left = if keyboard.IsKeyDown(Keys.Left) || keyboard.IsKeyDown(Keys.A) then -1.0f else 0.0f
-      let right = if keyboard.IsKeyDown(Keys.Right) || keyboard.IsKeyDown(Keys.D) then 1.0f else 0.0f
+      let left =
+        if keyboard.IsKeyDown(Keys.Left) || keyboard.IsKeyDown(Keys.A) then
+          -1.0f
+        else
+          0.0f
+
+      let right =
+        if keyboard.IsKeyDown(Keys.Right) || keyboard.IsKeyDown(Keys.D) then
+          1.0f
+        else
+          0.0f
+
       left + right
 
-    let jumpPressed = keyboard.IsKeyDown(Keys.Up) || keyboard.IsKeyDown(Keys.W) || keyboard.IsKeyDown(Keys.Space)
+    let jumpPressed =
+      keyboard.IsKeyDown(Keys.Up)
+      || keyboard.IsKeyDown(Keys.W)
+      || keyboard.IsKeyDown(Keys.Space)
 
-    // Start with current velocity
     let velocity = model.Player.Velocity
 
-    // Apply movement
     let velocity = Physics.applyMovement config horizontalInput velocity
 
-    // Apply jump if grounded (use previous frame's grounded state for responsiveness)
     let velocity =
       if jumpPressed && model.Player.IsGrounded then
-        Vector3(velocity.X, config.JumpVelocity, 0.0f)  // Positive for upward in Y-up
+        Vector3(velocity.X, config.JumpVelocity, 0.0f)
       else
         velocity
 
-    // Apply gravity
     let velocity = Physics.applyGravity config velocity dt
 
-    // Move with collision
-    let playerState = {
-      model.Player with
-        Velocity = velocity
-    }
+    let playerState = { model.Player with Velocity = velocity }
 
     let struct (newPos, newVel, wasGrounded) =
       Physics.moveAndSlide config playerState model.StaticBodies dt
 
-    // Check grounded at the NEW position after movement
-    let groundInfo =
-      Physics.checkGrounded config newPos model.StaticBodies
+    let groundInfo = Physics.checkGrounded config newPos model.StaticBodies
 
     let player = {
       Position = newPos
       Velocity = newVel
-      IsGrounded = wasGrounded || groundInfo.IsGrounded  // Either collision-based or raycast-based
+      IsGrounded = wasGrounded || groundInfo.IsGrounded
       GroundNormal = groundInfo.GroundNormal
     }
 
-    // Debug output (when moving/jumping)
-    if horizontalInput <> 0.0f || jumpPressed || Math.Abs(newVel.Y) > 10.0f then
-      printfn $"h={horizontalInput}, jump={jumpPressed}, grounded={model.Player.IsGrounded}, Pos=({newPos.X:F0},{newPos.Y:F0}), Vel=({newVel.X:F0},{newVel.Y:F0})"
-
-    // Update camera to follow player
     let cameraTarget = Vector3(newPos.X, newPos.Y, 0.0f)
 
-    // Check for triggers (overlap with player center)
-    let triggerEntity =
-      model.Entities
-      |> Array.tryFind(fun e ->
-        e.LayerName = "Triggers" && 
-        match e.Bounds with
-        | Some b -> 
-            Physics.intersectsBox newPos (e.WorldPosition + b.Center) b.Size
-        | None -> 
-            // Fallback for triggers without models (use tile size)
-            Physics.intersectsBox newPos e.WorldPosition (Vector3(cellSize, cellSize, cellSize)))
-
-    let cmd =
-      match triggerEntity with
-      | Some e -> Cmd.ofMsg (TriggerActivated e)
-      | None -> Cmd.none
-
-    struct ({ model with Player = player; CameraTarget = cameraTarget }, cmd)
+    if newPos.Y < fallRespawnThreshold then
+      struct (model, Cmd.ofMsg Respawn)
+    else
+      struct ({ model with Player = player; CameraTarget = cameraTarget }, Cmd.none)
 
   | LevelLoaded _ -> struct (model, Cmd.none)
 
-  | TriggerActivated entity ->
-    // Basic trigger handler - could expand this later (e.g., play sound, change state)
-    printfn $"Trigger Activated: {entity.EntityType} at {entity.WorldPosition}"
-    struct (model, Cmd.none)
+  | InputMapped _actions -> struct (model, Cmd.none)
 
-  | InputMapped _actions ->
-    // Input is polled directly in Tick - ignore subscription
-    struct (model, Cmd.none)
+  | Respawn ->
+    let respawnedPlayer = {
+      Position = model.SpawnPoint
+      Velocity = Vector3.Zero
+      IsGrounded = false
+      GroundNormal = Vector3.Up
+    }
+
+    struct ({ model with Player = respawnedPlayer; CameraTarget = model.SpawnPoint }, Cmd.none)
 
 // ============================================
 // View
@@ -232,44 +189,35 @@ let view
   |> Buffer.camera camera
   |> Buffer.submit
 
-  // Render static entities
   for entity in model.Entities do
     match entity.EntityType with
-    | Player -> () 
+    | Player -> ()
     | _ ->
-      match entity.ModelPath with
-      | Some path ->
+      entity.ModelPath
+      |> Option.iter(fun path ->
         let modelAsset = Mibo.Elmish.Assets.model path ctx
         let mesh = Mesh.fromModel modelAsset
-        let rot = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(entity.Rotation), 0.0f, 0.0f)
+
+        let scaleX = float32 entity.StretchX
+        let pos = entity.WorldPosition
+        let offsetX = (scaleX - 1.0f) * cellSizeF / 2.0f
+        let adjustedPos = Vector3(pos.X + offsetX, pos.Y, pos.Z)
+        let scaleVec = Vector3(scaleX, 1.0f, 1.0f)
 
         for mesh_ in mesh do
           buffer
-          |> Buffer.draw (
-            draw {
-              mesh mesh_
-              at entity.WorldPosition
-              rotatedBy rot
-            }
-          )
-          |> Buffer.submit
-      | None -> ()
+          |> Buffer.draw (draw { mesh mesh_; at adjustedPos; scaledByVec scaleVec })
+          |> Buffer.submit)
 
   // Render player
-  let playerAsset = Mibo.Elmish.Assets.model "PlatformerKit/character-oobi" ctx
-  let playerMesh = Mesh.fromModel playerAsset
-  let renderPos = model.Player.Position - Vector3(0.0f, Physics.DefaultConfig.PlayerRadius, 0.0f)
+  let playerModel = Mibo.Elmish.Assets.model "PlatformerKit/character-oobi" ctx
+  let playerMesh = Mesh.fromModel playerModel
+  let renderPos = model.Player.Position - Vector3(0.0f, Physics.DefaultConfig.PlayerHeight / 2.0f, 0.0f)
   let playerRot = Quaternion.CreateFromYawPitchRoll(MathHelper.ToRadians(90.0f), 0.0f, 0.0f)
 
   for mesh_ in playerMesh do
     buffer
-    |> Buffer.draw (
-      draw {
-        mesh mesh_
-        at renderPos
-        rotatedBy playerRot
-      }
-    )
+    |> Buffer.draw (draw { mesh mesh_; at renderPos; rotatedBy playerRot })
     |> Buffer.submit
 
 // ============================================

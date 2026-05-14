@@ -1,0 +1,546 @@
+namespace FsJump.Core
+
+open System
+open Microsoft.Xna.Framework
+open Mibo.Layout3D
+open FsJump.Core.Types
+
+// ============================================
+// Core Domain Types
+// ============================================
+
+/// Full bounds and offset metadata for a model
+type ModelMetadata = { Bounds: ModelBounds; Offset: Vector3 }
+
+/// Content of a single cell in the 3D grid.
+[<Struct>]
+type LayoutCell =
+  | Terrain of modelPath: string
+  | TerrainStretched of modelPath: string * stretchWidth: int // Anchor cell for stretched platforms
+  | Decoration of modelPath: string
+  | Hazard of modelPath: string * hazardType: string
+  | MovingPlatform of modelPath: string
+  | Goal of modelPath: string
+  | SpawnPoint
+  | CollisionOnly of modelPath: string // Has collision but doesn't render (for stretched platforms)
+  | Empty
+
+/// A Flow is a function that takes a cursor (X, Section) and returns an updated cursor.
+/// This enables declarative piping: (0, sec) |> ground 4 |> gap 2
+type Flow = int * GridSection3D<LayoutCell> -> int * GridSection3D<LayoutCell>
+
+module InternalMetadata =
+  open System.Collections.Generic
+  let metadataCache = Dictionary<string, ModelMetadata>()
+  let mutable private gameContext: Mibo.Elmish.GameContext option = None
+
+  let setContext (ctx: Mibo.Elmish.GameContext) =
+    gameContext <- Some ctx
+
+  let tryExtract (modelPath: string) =
+    match gameContext with
+    | Some ctx when not (metadataCache.ContainsKey modelPath) ->
+      try
+        let model = Mibo.Elmish.Assets.model modelPath ctx
+        let bounds = ModelBounds.extractFromModel model
+        let meta =
+          { Bounds = bounds
+            Offset = ModelBounds.calculateOffset bounds BottomCenter }
+        metadataCache[modelPath] <- meta
+        ValueSome meta
+      with _ -> ValueNone
+    | _ -> ValueNone
+
+// ============================================
+// Asset & Theme Registry
+// ============================================
+
+module Theme =
+  module Terrain =
+    let grassLarge = "PlatformerKit/block-grass-large"
+    let grassLow = "PlatformerKit/block-grass-low"
+    let grassLowNarrow = "PlatformerKit/block-grass-low-narrow"
+    let grassHexagon = "PlatformerKit/block-grass-low-hexagon"
+    let slopeSteep = "PlatformerKit/block-grass-large-slope-steep"
+    let pipe = "PlatformerKit/pipe"
+
+  module Decor =
+    let arrow = "PlatformerKit/arrow"
+    let flowers = "PlatformerKit/flowers"
+    let coinGold = "PlatformerKit/coin-gold"
+    let coinSilver = "PlatformerKit/coin-silver"
+    let heart = "PlatformerKit/heart"
+
+  module Hazards =
+    let spikes = "PlatformerKit/trap-spikes"
+    let saw = "PlatformerKit/saw"
+    let tree = "PlatformerKit/tree-pine-small"
+
+  module Special =
+    let goal = "PlatformerKit/flowers"
+    let movingPlatform = "PlatformerKit/block-moving-blue"
+
+
+// ============================================
+// Metadata Extraction
+// ============================================
+
+module Metadata =
+  let extractThemeMetadata(ctx: Mibo.Elmish.GameContext) =
+    InternalMetadata.setContext ctx
+    // Pre-warm cache with known models (lazy extraction handles the rest)
+    [| Theme.Terrain.grassLarge
+       Theme.Terrain.grassLow
+       Theme.Terrain.grassLowNarrow
+       Theme.Decor.arrow
+       Theme.Decor.flowers
+       Theme.Decor.coinGold
+       Theme.Hazards.spikes
+       Theme.Hazards.saw
+       Theme.Special.movingPlatform
+       "PlatformerKit/character-oobi" |]
+    |> Array.iter(InternalMetadata.tryExtract >> ignore)
+
+// ============================================
+// Platformer DSL (Domain Specific Language)
+// ============================================
+
+module Platformer =
+  /// A basic gap (empty space).
+  let inline gap(width: int) : Flow = fun (x, sec) -> (x + width, sec)
+
+  /// Solid ground at y=0.
+  let inline ground(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section
+        x
+        0
+        0
+        (Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge))
+      |> ignore
+
+      (x + width, sec)
+
+  /// Stretched ground - renders ONE model scaled to cover the entire width (better perf).
+  /// Use for long continuous ground sections.
+  let inline stretchedGround(width: int) : Flow =
+    fun (x, sec) ->
+      // Place a single terrain cell that will be rendered stretched
+      sec
+      |> Layout3D.section
+        x
+        0
+        0
+        (Layout3D.set 0 0 0 (TerrainStretched(Theme.Terrain.grassLarge, width)))
+      |> ignore
+      // Fill collision markers for the rest (no render, collision only)
+      if width > 1 then
+        sec
+        |> Layout3D.section
+          (x + 1)
+          0
+          0
+          (Layout3D.fill
+            0
+            0
+            0
+            (width - 1)
+            1
+            1
+            (CollisionOnly Theme.Terrain.grassLarge))
+        |> ignore
+
+      (x + width, sec)
+
+  /// A platform at a specific height - renders N individual models (one per cell).
+  /// Use for platforms that should appear as discrete tiles (hexagons, stepping stones, etc.)
+  let inline platform (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
+
+      let model =
+        if width = 1 then
+          Theme.Terrain.grassLow
+        else
+          Theme.Terrain.grassLowNarrow
+
+      sec
+      |> Layout3D.section x y 0 (Layout3D.fill 0 0 0 width 1 1 (Terrain model))
+      |> ignore
+
+      (x + width, sec)
+
+  /// Alias for platform - explicitly named for clarity
+  let inline discretePlatform (width: int) (height: float32) : Flow =
+    platform width height
+
+  /// A stretched platform - renders ONE model scaled to cover the width.
+  /// Use for long continuous platforms where visual uniformity is desired.
+  let inline stretchedPlatform (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
+      // Place anchor cell for rendering
+      sec
+      |> Layout3D.section
+        x
+        y
+        0
+        (Layout3D.set
+          0
+          0
+          0
+          (TerrainStretched(Theme.Terrain.grassLowNarrow, width)))
+      |> ignore
+      // Fill collision markers for the rest
+      if width > 1 then
+        sec
+        |> Layout3D.section
+          (x + 1)
+          y
+          0
+          (Layout3D.fill
+            0
+            0
+            0
+            (width - 1)
+            1
+            1
+            (CollisionOnly Theme.Terrain.grassLowNarrow))
+        |> ignore
+
+      (x + width, sec)
+
+  /// The starting area for the player (uses stretched optimization).
+  let inline spawnArea(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
+        // Render first cell, CollisionOnly for the rest
+        |> Layout3D.set
+          0
+          0
+          0
+          (TerrainStretched(Theme.Terrain.grassLarge, width))
+        |> (fun s2 ->
+          if width > 1 then
+            s2
+            |> Layout3D.fill
+              1
+              0
+              0
+              (width - 1)
+              1
+              1
+              (CollisionOnly Theme.Terrain.grassLarge)
+          else
+            s2)
+        |> Layout3D.set (width / 2) 1 0 SpawnPoint
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.arrow))
+      |> ignore
+
+      (x + width, sec)
+
+  /// A pit full of spikes.
+  let inline spikePit(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
+        |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
+        |> Layout3D.fill
+          0
+          1
+          0
+          width
+          1
+          1
+          (Hazard(Theme.Hazards.spikes, "spikes")))
+      |> ignore
+
+      (x + width, sec)
+
+  /// A platform with a coin on top.
+  let inline platformWithCoin (width: int) (height: float32) : Flow =
+    fun (x, sec) ->
+      let y = int(Math.Round(float height))
+
+      sec
+      |> Layout3D.section x y 0 (fun s ->
+        s
+        |> (fun s2 ->
+          s2
+          |> Layout3D.fill
+            0
+            0
+            0
+            width
+            1
+            1
+            (Terrain Theme.Terrain.grassLowNarrow))
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.coinGold))
+      |> ignore
+
+      (x + width, sec)
+
+  /// The end of the level.
+  let inline goalArea(width: int) : Flow =
+    fun (x, sec) ->
+      sec
+      |> Layout3D.section x 0 0 (fun s ->
+        s
+        |> Layout3D.fill 0 0 0 width 1 1 (Terrain Theme.Terrain.grassLarge)
+        |> Layout3D.set (width / 2) 1 0 (Goal Theme.Special.goal)
+        |> Layout3D.set (width / 2) 1 1 (Decoration Theme.Decor.flowers))
+      |> ignore
+
+      (x + width, sec)
+
+
+// ============================================
+// Level Layout Implementation
+// ============================================
+
+module LevelLayout =
+  let mapWidth = 200
+  let mapHeight = 20
+  let mapDepth = 2
+
+  /// Calculates world position for a cell's bottom.
+  let inline cellBottom x y z =
+    Vector3(
+      float32 x * cellSize + (cellSize / 2.0f),
+      float32 y * cellSize,
+      float32 z * 0.1f // Tiny epsilon for layering
+    )
+
+  /// Creates the 3D grid using a declarative piping DSL.
+  let createPrototypeLevel() : CellGrid3D<LayoutCell> =
+    CellGrid3D.create
+      mapWidth
+      mapHeight
+      mapDepth
+      (Vector3(cellSize, cellSize, cellSize))
+      Vector3.Zero
+    |> Layout3D.run(fun sec ->
+      let finalX, finalSec =
+        (0, sec)
+        |> Platformer.spawnArea 4
+        |> Platformer.ground 2
+        |> Platformer.gap 1
+        |> Platformer.platformWithCoin 3 0.8f // ~51 units, reachable from ground
+        |> Platformer.gap 1
+        |> Platformer.spikePit 4
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 2 0.5f // discrete stepping stones
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 2 1.0f // step up
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 2 1.4f // step up more
+        |> Platformer.gap 2
+        |> Platformer.platformWithCoin 2 1.0f
+        |> (fun (x, s) ->
+          // Moving platform section
+          s
+          |> Layout3D.section x 1 0 (fun s2 ->
+            s2
+            |> Layout3D.set
+              1
+              0
+              0
+              (MovingPlatform Theme.Special.movingPlatform))
+          |> ignore
+
+          (x + 3, s))
+        |> Platformer.gap 1
+        |> Platformer.stretchedPlatform 4 0.5f // stretched landing platform
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 1 1.0f // single stepping stone
+        |> Platformer.gap 1
+        |> Platformer.discretePlatform 1 1.0f // another stepping stone
+        |> Platformer.gap 1
+        |> Platformer.stretchedGround 4 // landing area
+        |> Platformer.goalArea 6
+
+      finalSec)
+
+
+  // ============================================
+  // Converters (Grid -> Game Entities)
+  // ============================================
+
+  /// Gets the visual offset for a model to align its bottom-center with target position.
+  /// Attempts lazy extraction if model isn't cached yet.
+  let inline applyMetadata (modelPath: string) (targetBottom: Vector3) =
+    match InternalMetadata.metadataCache.TryGetValue(modelPath) with
+    | (true, meta) -> targetBottom + meta.Offset
+    | _ ->
+      match InternalMetadata.tryExtract modelPath with
+      | ValueSome meta -> targetBottom + meta.Offset
+      | ValueNone -> targetBottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
+
+  /// Gets the model bounds from cache. Attempts lazy extraction if needed.
+  let inline getBoundsFromCache(modelPath: string) : ModelBounds option =
+    match InternalMetadata.metadataCache.TryGetValue(modelPath) with
+    | (true, meta) -> Some meta.Bounds
+    | _ ->
+      match InternalMetadata.tryExtract modelPath with
+      | ValueSome meta -> Some meta.Bounds
+      | ValueNone -> None
+
+  let gridToEntities(grid: CellGrid3D<LayoutCell>) : Entity[] =
+    let entities = ResizeArray<Entity>()
+
+    // Terrain models don't fill a full cell height (cellSize = 64).
+    // Objects at y>0 that sit on terrain need their Y offset down
+    // so their bottom aligns with the terrain's visual top.
+    // Uses CellGrid3D.get to look up the actual terrain model below (x, y-1, z)
+    // so the offset is correct for different terrain types.
+    let sitBottom x y z =
+      let b = cellBottom x y z
+      if y > 0 then
+        let terrainHeight =
+          match CellGrid3D.get x (y - 1) 0 grid with
+          | ValueSome (Terrain p)
+          | ValueSome (TerrainStretched (p, _))
+          | ValueSome (CollisionOnly p) ->
+            match InternalMetadata.metadataCache.TryGetValue(p) with
+            | true, meta -> meta.Bounds.Size.Y
+            | _ -> cellSize
+          | _ -> cellSize
+        Vector3(b.X, b.Y + terrainHeight - cellSize, b.Z)
+      else b
+
+    grid
+    |> CellGrid3D.iter(fun x y z cell ->
+      let bottom =
+        match cell with
+        | MovingPlatform _ | SpawnPoint -> cellBottom x y z // floating, no offset
+        | _ -> sitBottom x y z // sit on terrain below
+
+      let newId() = Guid.NewGuid()
+
+      match cell with
+      | Terrain modelPath
+      | Decoration modelPath ->
+        let entityType =
+          if z > 0 then
+            EntityType.Decoration
+          else
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = entityType
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = 1
+        }
+      | TerrainStretched(modelPath, stretchWidth) ->
+        // Stretched anchor cell: renders one model scaled to cover stretchWidth cells
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType =
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = stretchWidth // Will be used for X-scale in rendering
+        }
+      | CollisionOnly modelPath ->
+        // Collision-only cell: entity with physics but no rendering
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType =
+            EntityType.Static {
+              GridPos = { X = x; Y = y; Anchor = BottomCenter }
+              TileId = 0
+              Scale = 1.0f
+            }
+          ModelPath = None // No model = no rendering
+          Bounds = getBoundsFromCache modelPath // But still has bounds for physics
+          StretchX = 1
+        }
+      | Hazard(modelPath, _hazardType) ->
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = Danger
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = 1
+        }
+      | MovingPlatform modelPath ->
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = EntityType.MovingPlatform
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = 1
+        }
+      | Goal modelPath ->
+        entities.Add {
+          Id = newId()
+          WorldPosition = applyMetadata modelPath bottom
+          EntityType = EntityType.Goal
+          ModelPath = Some modelPath
+          Bounds = getBoundsFromCache modelPath
+          StretchX = 1
+        }
+      | SpawnPoint ->
+        entities.Add {
+          Id = newId()
+          WorldPosition = bottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
+          EntityType = Player
+          ModelPath = None
+          Bounds = None
+          StretchX = 1
+        }
+      | Empty -> ())
+
+    entities.ToArray()
+
+  let getSpawnPoint(grid: CellGrid3D<LayoutCell>) : Vector3 option =
+    let mutable spawnPos = None
+
+    grid
+    |> CellGrid3D.iter(fun x y z cell ->
+      match cell with
+      | SpawnPoint ->
+        spawnPos <- Some(cellBottom x y z + Vector3(0.0f, 32.0f, 0.0f))
+      | _ -> ())
+
+    spawnPos
+
+  /// Derives physics bodies from entities using their WorldPosition and Bounds.
+  /// Entity.WorldPosition is the visual draw position where the model is rendered.
+  /// The model's actual center in world space is WorldPosition + bounds.Center.
+  let entitiesToPhysicsBodies(entities: Entity[]) : PhysicsBody[] =
+    entities
+    |> Array.choose(fun entity ->
+      match entity.EntityType, entity.Bounds with
+      | Static _, Some bounds
+      | EntityType.MovingPlatform, Some bounds ->
+        // The model is drawn at WorldPosition
+        // Its center in world space is WorldPosition + bounds.Center
+        let physicsCenter = entity.WorldPosition + bounds.Center
+
+        Some {
+          Position = physicsCenter
+          Velocity = Vector3.Zero
+          Shape = Box bounds.Size
+          IsStatic = true // MovingPlatform treated as static for now
+        }
+      | _ -> None)
