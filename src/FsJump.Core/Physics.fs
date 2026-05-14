@@ -289,23 +289,20 @@ module Physics =
             let boxMax = body.Position + halfSize
 
             // Calculate penetration depth on each axis
-            let dx1 = newPos.X - boxMin.X // distance to left face
-            let dx2 = boxMax.X - newPos.X // distance to right face
-            let dz1 = newPos.Z - boxMin.Z // distance to back face
-            let dz2 = boxMax.Z - newPos.Z // distance to front face
+            let dx1 = newPos.X - boxMin.X
+            let dx2 = boxMax.X - newPos.X
+            let dz1 = newPos.Z - boxMin.Z
+            let dz2 = boxMax.Z - newPos.Z
 
-            // Push opposite to velocity direction (back the way we came)
             if
               Math.Abs(newVel.X) >= Math.Abs(newVel.Z)
               && Math.Abs(newVel.X) > Epsilon
             then
               if newVel.X > 0.0f then
-                // Moving right, push back to left face
                 let pen = dx1 + radius
                 newPos <- newPos - Vector3(pen, 0f, 0f)
                 newVel <- slideVelocity newVel (Vector3(-1f, 0f, 0f))
               else
-                // Moving left, push back to right face
                 let pen = dx2 + radius
                 newPos <- newPos + Vector3(pen, 0f, 0f)
                 newVel <- slideVelocity newVel (Vector3(1f, 0f, 0f))
@@ -313,26 +310,21 @@ module Physics =
               hadCollision <- true
             elif Math.Abs(newVel.Z) > Epsilon then
               if newVel.Z > 0.0f then
-                // Moving forward, push back
                 let pen = dz1 + radius
                 newPos <- newPos - Vector3(0f, 0f, pen)
                 newVel <- slideVelocity newVel (Vector3(0f, 0f, -1f))
               else
-                // Moving backward, push forward
                 let pen = dz2 + radius
                 newPos <- newPos + Vector3(0f, 0f, pen)
                 newVel <- slideVelocity newVel (Vector3(0f, 0f, 1f))
 
               hadCollision <- true
-          // else: no significant horizontal velocity, let feet check handle vertical
 
           elif centerDistSq < radius * radius then
-            // Center close to but outside box surface
             let centerDist = Math.Sqrt(float centerDistSq) |> float32
             let normal = centerDiff / centerDist
             let penetration = radius - centerDist
 
-            // Only apply horizontal push (walls), skip if mostly vertical
             if Math.Abs(normal.Y) < 0.5f then
               newPos <- newPos + normal * penetration
               newVel <- slideVelocity newVel normal
