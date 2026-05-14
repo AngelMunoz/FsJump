@@ -32,6 +32,24 @@ type Flow = int * GridSection3D<LayoutCell> -> int * GridSection3D<LayoutCell>
 module InternalMetadata =
   open System.Collections.Generic
   let metadataCache = Dictionary<string, ModelMetadata>()
+  let mutable private gameContext: Mibo.Elmish.GameContext option = None
+
+  let setContext (ctx: Mibo.Elmish.GameContext) =
+    gameContext <- Some ctx
+
+  let tryExtract (modelPath: string) =
+    match gameContext with
+    | Some ctx when not (metadataCache.ContainsKey modelPath) ->
+      try
+        let model = Mibo.Elmish.Assets.model modelPath ctx
+        let bounds = ModelBounds.extractFromModel model
+        let meta =
+          { Bounds = bounds
+            Offset = ModelBounds.calculateOffset bounds BottomCenter }
+        metadataCache[modelPath] <- meta
+        ValueSome meta
+      with _ -> ValueNone
+    | _ -> ValueNone
 
 // ============================================
 // Asset & Theme Registry
@@ -69,29 +87,19 @@ module Theme =
 
 module Metadata =
   let extractThemeMetadata(ctx: Mibo.Elmish.GameContext) =
-    let extract path =
-      if not(InternalMetadata.metadataCache.ContainsKey path) then
-        let model = Mibo.Elmish.Assets.model path ctx
-        let bounds = ModelBounds.extractFromModel model
-
-        InternalMetadata.metadataCache.Add(
-          path,
-          {
-            Bounds = bounds
-            Offset = ModelBounds.calculateOffset bounds BottomCenter
-          }
-        )
-
-    extract Theme.Terrain.grassLarge
-    extract Theme.Terrain.grassLow
-    extract Theme.Terrain.grassLowNarrow
-    extract Theme.Decor.arrow
-    extract Theme.Decor.flowers
-    extract Theme.Decor.coinGold
-    extract Theme.Hazards.spikes
-    extract Theme.Hazards.saw
-    extract Theme.Special.movingPlatform
-    extract "PlatformerKit/character-oobi"
+    InternalMetadata.setContext ctx
+    // Pre-warm cache with known models (lazy extraction handles the rest)
+    [| Theme.Terrain.grassLarge
+       Theme.Terrain.grassLow
+       Theme.Terrain.grassLowNarrow
+       Theme.Decor.arrow
+       Theme.Decor.flowers
+       Theme.Decor.coinGold
+       Theme.Hazards.spikes
+       Theme.Hazards.saw
+       Theme.Special.movingPlatform
+       "PlatformerKit/character-oobi" |]
+    |> Array.iter(InternalMetadata.tryExtract >> ignore)
 
 // ============================================
 // Platformer DSL (Domain Specific Language)
@@ -362,17 +370,24 @@ module LevelLayout =
   // Converters (Grid -> Game Entities)
   // ============================================
 
-  /// Gets the visual offset for a model to align its bottom-center with target position
+  /// Gets the visual offset for a model to align its bottom-center with target position.
+  /// Attempts lazy extraction if model isn't cached yet.
   let inline applyMetadata (modelPath: string) (targetBottom: Vector3) =
     match InternalMetadata.metadataCache.TryGetValue(modelPath) with
     | (true, meta) -> targetBottom + meta.Offset
-    | _ -> targetBottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
+    | _ ->
+      match InternalMetadata.tryExtract modelPath with
+      | ValueSome meta -> targetBottom + meta.Offset
+      | ValueNone -> targetBottom + Vector3(0.0f, cellSize / 2.0f, 0.0f)
 
-  /// Gets the model bounds from cache
+  /// Gets the model bounds from cache. Attempts lazy extraction if needed.
   let inline getBoundsFromCache(modelPath: string) : ModelBounds option =
     match InternalMetadata.metadataCache.TryGetValue(modelPath) with
     | (true, meta) -> Some meta.Bounds
-    | _ -> None
+    | _ ->
+      match InternalMetadata.tryExtract modelPath with
+      | ValueSome meta -> Some meta.Bounds
+      | ValueNone -> None
 
   let gridToEntities(grid: CellGrid3D<LayoutCell>) : Entity[] =
     let entities = ResizeArray<Entity>()
@@ -380,14 +395,22 @@ module LevelLayout =
     // Terrain models don't fill a full cell height (cellSize = 64).
     // Objects at y>0 that sit on terrain need their Y offset down
     // so their bottom aligns with the terrain's visual top.
-    let terrainHeightOffset =
-      match InternalMetadata.metadataCache.TryGetValue(Theme.Terrain.grassLarge) with
-      | true, meta -> meta.Bounds.Size.Y - cellSize // negative: terrain is shorter than cell
-      | _ -> 0.0f
-
+    // Uses CellGrid3D.get to look up the actual terrain model below (x, y-1, z)
+    // so the offset is correct for different terrain types.
     let sitBottom x y z =
       let b = cellBottom x y z
-      if y > 0 then Vector3(b.X, b.Y + terrainHeightOffset, b.Z) else b
+      if y > 0 then
+        let terrainHeight =
+          match CellGrid3D.get x (y - 1) 0 grid with
+          | ValueSome (Terrain p)
+          | ValueSome (TerrainStretched (p, _))
+          | ValueSome (CollisionOnly p) ->
+            match InternalMetadata.metadataCache.TryGetValue(p) with
+            | true, meta -> meta.Bounds.Size.Y
+            | _ -> cellSize
+          | _ -> cellSize
+        Vector3(b.X, b.Y + terrainHeight - cellSize, b.Z)
+      else b
 
     grid
     |> CellGrid3D.iter(fun x y z cell ->
